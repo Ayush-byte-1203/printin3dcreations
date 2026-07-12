@@ -19,7 +19,7 @@ const AdminLogin = () => {
         try {
             if (isBackendOnline) {
                 // Connect to Django server
-                const response = await fetch('https://ayush1273.pythonanywhere.comapi/login/', {
+                const response = await fetch('https://ayush1273.pythonanywhere.com/api/login/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })

@@ -55,7 +55,7 @@ const AdminTopics = () => {
 
         setUploading(true);
         try {
-            const response = await fetch('https://ayush1273.pythonanywhere.comapi/upload/', {
+            const response = await fetch('https://ayush1273.pythonanywhere.com/api/upload/', {
                 method: 'POST',
                 body: formData
             });
@@ -117,14 +117,14 @@ const AdminTopics = () => {
             let response;
             if (editingTopic) {
                 // Update
-                response = await fetch(`https://ayush1273.pythonanywhere.comapi/topics/${editingTopic.id}/`, {
+                response = await fetch(`https://ayush1273.pythonanywhere.com/api/topics/${editingTopic.id}/`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
             } else {
                 // Create
-                response = await fetch('https://ayush1273.pythonanywhere.comapi/topics/', {
+                response = await fetch('https://ayush1273.pythonanywhere.com/api/topics/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -154,7 +154,7 @@ const AdminTopics = () => {
 
         if (window.confirm(`Are you sure you want to delete category "${name}"? This will delete all products under it!`)) {
             try {
-                const response = await fetch(`https://ayush1273.pythonanywhere.comapi/topics/${id}/`, {
+                const response = await fetch(`https://ayush1273.pythonanywhere.com/api/topics/${id}/`, {
                     method: 'DELETE'
                 });
 

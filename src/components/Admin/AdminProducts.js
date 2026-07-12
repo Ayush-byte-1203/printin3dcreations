@@ -182,7 +182,7 @@ const AdminProducts = () => {
 
         setUploading(true);
         try {
-            const response = await fetch('https://ayush1273.pythonanywhere.comapi/upload/', {
+            const response = await fetch('https://ayush1273.pythonanywhere.com/api/upload/', {
                 method: 'POST',
                 body: formData
             });
@@ -261,14 +261,14 @@ const AdminProducts = () => {
             let response;
             if (editingProduct && editingProduct.dbId) {
                 // Update
-                response = await fetch(`https://ayush1273.pythonanywhere.comapi/products/${editingProduct.dbId}/`, {
+                response = await fetch(`https://ayush1273.pythonanywhere.com/api/products/${editingProduct.dbId}/`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
             } else {
                 // Create
-                response = await fetch('https://ayush1273.pythonanywhere.comapi/products/', {
+                response = await fetch('https://ayush1273.pythonanywhere.com/api/products/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -298,7 +298,7 @@ const AdminProducts = () => {
 
         if (window.confirm(`Are you sure you want to delete product "${prodName}" (#${strId})?`)) {
             try {
-                const response = await fetch(`https://ayush1273.pythonanywhere.comapi/products/${dbId}/`, {
+                const response = await fetch(`https://ayush1273.pythonanywhere.com/api/products/${dbId}/`, {
                     method: 'DELETE'
                 });
 
@@ -712,7 +712,7 @@ const AdminProducts = () => {
                                                                         const formData = new FormData();
                                                                         formData.append('image', file);
                                                                         try {
-                                                                            const res = await fetch('https://ayush1273.pythonanywhere.comapi/upload/', {
+                                                                            const res = await fetch('https://ayush1273.pythonanywhere.com/api/upload/', {
                                                                                 method: 'POST',
                                                                                 body: formData
                                                                             });
