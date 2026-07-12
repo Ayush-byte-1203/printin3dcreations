@@ -120,7 +120,10 @@
     font-size: 0.9rem;
     color: var(--color-text-secondary);
 }
-.filter-summary strong { color: var(--color-text-main); }
+
+.filter-summary strong {
+    color: var(--color-text-main);
+}
 
 .sort-wrapper-premium {
     display: flex;
@@ -185,8 +188,8 @@
 
 .listing-card-premium:hover {
     transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-    border-color: rgba(0,0,0,0.05);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.05);
 }
 
 .listing-card-media {
@@ -220,13 +223,13 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     z-index: 5;
-    box-shadow: 0 4px 10px rgba(200,35,74,0.3);
+    box-shadow: 0 4px 10px rgba(200, 35, 74, 0.3);
 }
 
 .listing-card-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0,0,0,0.1);
+    background: rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -249,7 +252,7 @@
     font-size: 0.8rem;
     transform: translateY(10px);
     transition: transform 0.4s var(--ease-out);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .listing-card-premium:hover .overlay-view-btn {
@@ -331,24 +334,49 @@
 
 /* ── Responsive ── */
 @media (max-width: 1200px) {
-    .listing-grid-premium { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .listing-grid-premium {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+    }
 }
 
 @media (max-width: 900px) {
-    .listing-header-main { 
-        flex-direction: column; 
-        align-items: center; 
-        text-align: center; 
+    .listing-header-main {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
         padding: 40px 24px;
         gap: 32px;
     }
-    .topic-desc-refined { margin-left: auto; margin-right: auto; }
-    .topic-meta-glass { justify-content: center; }
-    .listing-grid-premium { grid-template-columns: repeat(2, 1fr); }
+
+    .topic-desc-refined {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .topic-meta-glass {
+        justify-content: center;
+    }
+
+    .listing-grid-premium {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 @media (max-width: 600px) {
-    .listing-controls-premium { flex-direction: column; gap: 20px; border-radius: 24px; padding: 24px; }
-    .listing-grid-premium { grid-template-columns: 1fr; }
-    .topic-icon-premium { width: 80px; height: 80px; }
+    .listing-controls-premium {
+        flex-direction: column;
+        gap: 20px;
+        border-radius: 24px;
+        padding: 24px;
+    }
+
+    .listing-grid-premium {
+        grid-template-columns: 1fr;
+    }
+
+    .topic-icon-premium {
+        width: 80px;
+        height: 80px;
+    }
 }
