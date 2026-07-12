@@ -13,8 +13,8 @@ export const DataProvider = ({ children }) => {
 
     const refreshData = async () => {
         try {
-            const topicsRes = await fetch('http://127.0.0.1:8000/api/topics/');
-            const productsRes = await fetch('http://127.0.0.1:8000/api/products/');
+            const topicsRes = await fetch('https://ayush1273.pythonanywhere.comapi/topics/');
+            const productsRes = await fetch('https://ayush1273.pythonanywhere.comapi/products/');
 
             if (topicsRes.ok && productsRes.ok) {
                 const topics = await topicsRes.json();

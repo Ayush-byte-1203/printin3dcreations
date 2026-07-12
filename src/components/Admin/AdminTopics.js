@@ -55,7 +55,7 @@ const AdminTopics = () => {
 
         setUploading(true);
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/upload/', {
+            const response = await fetch('https://ayush1273.pythonanywhere.comapi/upload/', {
                 method: 'POST',
                 body: formData
             });
@@ -117,14 +117,14 @@ const AdminTopics = () => {
             let response;
             if (editingTopic) {
                 // Update
-                response = await fetch(`http://127.0.0.1:8000/api/topics/${editingTopic.id}/`, {
+                response = await fetch(`https://ayush1273.pythonanywhere.comapi/topics/${editingTopic.id}/`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
             } else {
                 // Create
-                response = await fetch('http://127.0.0.1:8000/api/topics/', {
+                response = await fetch('https://ayush1273.pythonanywhere.comapi/topics/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -154,7 +154,7 @@ const AdminTopics = () => {
 
         if (window.confirm(`Are you sure you want to delete category "${name}"? This will delete all products under it!`)) {
             try {
-                const response = await fetch(`http://127.0.0.1:8000/api/topics/${id}/`, {
+                const response = await fetch(`https://ayush1273.pythonanywhere.comapi/topics/${id}/`, {
                     method: 'DELETE'
                 });
 
@@ -302,7 +302,7 @@ const AdminTopics = () => {
 
                                 <div className="admin-form-group">
                                     <label>Category Image</label>
-                                    
+
                                     {/* Direct File Upload */}
                                     <div className="media-manager-box">
                                         <Upload size={24} style={{ color: 'var(--admin-text-muted)', marginBottom: '8px' }} />
@@ -342,9 +342,9 @@ const AdminTopics = () => {
                                                     e.target.src = 'https://via.placeholder.com/80x80?text=Error';
                                                 }}
                                             />
-                                            <button 
-                                                type="button" 
-                                                onClick={() => setImage('')} 
+                                            <button
+                                                type="button"
+                                                onClick={() => setImage('')}
                                                 className="btn-media-delete"
                                                 style={{ position: 'absolute', top: '2px', right: '2px', background: 'rgba(239, 68, 68, 0.9)', color: '#fff', border: 'none', borderRadius: '4px', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
                                             >

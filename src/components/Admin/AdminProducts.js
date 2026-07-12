@@ -182,7 +182,7 @@ const AdminProducts = () => {
 
         setUploading(true);
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/upload/', {
+            const response = await fetch('https://ayush1273.pythonanywhere.comapi/upload/', {
                 method: 'POST',
                 body: formData
             });
@@ -231,11 +231,11 @@ const AdminProducts = () => {
             ? editingProduct.id
             : `${topic}-${Math.random().toString(36).substr(2, 5)}`;
 
-        const savedColorOptions = hasColors 
+        const savedColorOptions = hasColors
             ? colorOptions.map(opt => ({ color: opt.color, images: opt.images }))
             : [];
 
-        const savedImages = hasColors 
+        const savedImages = hasColors
             ? (colorOptions.length > 0 && colorOptions[0].images.length > 0 ? colorOptions[0].images : images)
             : images;
 
@@ -261,14 +261,14 @@ const AdminProducts = () => {
             let response;
             if (editingProduct && editingProduct.dbId) {
                 // Update
-                response = await fetch(`http://127.0.0.1:8000/api/products/${editingProduct.dbId}/`, {
+                response = await fetch(`https://ayush1273.pythonanywhere.comapi/products/${editingProduct.dbId}/`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
             } else {
                 // Create
-                response = await fetch('http://127.0.0.1:8000/api/products/', {
+                response = await fetch('https://ayush1273.pythonanywhere.comapi/products/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -298,7 +298,7 @@ const AdminProducts = () => {
 
         if (window.confirm(`Are you sure you want to delete product "${prodName}" (#${strId})?`)) {
             try {
-                const response = await fetch(`http://127.0.0.1:8000/api/products/${dbId}/`, {
+                const response = await fetch(`https://ayush1273.pythonanywhere.comapi/products/${dbId}/`, {
                     method: 'DELETE'
                 });
 
@@ -565,9 +565,9 @@ const AdminProducts = () => {
                                     </div>
 
                                     {customizable && (
-                                        <div style={{ 
-                                            padding: '16px', 
-                                            background: '#F8FAFC', 
+                                        <div style={{
+                                            padding: '16px',
+                                            background: '#F8FAFC',
                                             border: '1px solid var(--admin-border)',
                                             borderRadius: '6px',
                                             marginBottom: '20px'
@@ -632,10 +632,10 @@ const AdminProducts = () => {
                                         <div className="admin-form-group">
                                             <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                                                 Color Options & Images
-                                                <button 
-                                                    type="button" 
-                                                    onClick={() => setColorOptions([...colorOptions, { color: '', images: [], urlInput: '' }])} 
-                                                    className="admin-btn-secondary" 
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setColorOptions([...colorOptions, { color: '', images: [], urlInput: '' }])}
+                                                    className="admin-btn-secondary"
                                                     style={{ padding: '4px 10px', fontSize: '0.75rem' }}
                                                 >
                                                     + Add Color Option
@@ -644,12 +644,12 @@ const AdminProducts = () => {
 
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                                                 {colorOptions.map((opt, optIdx) => (
-                                                    <div 
-                                                        key={optIdx} 
-                                                        className="admin-panel-card" 
-                                                        style={{ 
-                                                            padding: '16px', 
-                                                            background: '#F8FAFC', 
+                                                    <div
+                                                        key={optIdx}
+                                                        className="admin-panel-card"
+                                                        style={{
+                                                            padding: '16px',
+                                                            background: '#F8FAFC',
                                                             border: '1px solid var(--admin-border)',
                                                             borderRadius: '6px',
                                                             position: 'relative'
@@ -691,7 +691,7 @@ const AdminProducts = () => {
                                                         {/* Image Upload/Link for this specific color */}
                                                         <div className="admin-form-group" style={{ marginBottom: '12px' }}>
                                                             <label style={{ fontSize: '0.75rem', fontWeight: 600 }}>Color Images</label>
-                                                            
+
                                                             {/* Upload local image for color */}
                                                             <div className="media-manager-box" style={{ padding: '12px', minHeight: '80px' }}>
                                                                 <Upload size={18} style={{ color: 'var(--admin-text-muted)', marginBottom: '4px' }} />
@@ -712,7 +712,7 @@ const AdminProducts = () => {
                                                                         const formData = new FormData();
                                                                         formData.append('image', file);
                                                                         try {
-                                                                            const res = await fetch('http://127.0.0.1:8000/api/upload/', {
+                                                                            const res = await fetch('https://ayush1273.pythonanywhere.comapi/upload/', {
                                                                                 method: 'POST',
                                                                                 body: formData
                                                                             });
@@ -776,13 +776,13 @@ const AdminProducts = () => {
                                                                                 e.target.src = 'https://via.placeholder.com/60x60?text=Error';
                                                                             }}
                                                                         />
-                                                                        <button 
-                                                                            type="button" 
+                                                                        <button
+                                                                            type="button"
                                                                             onClick={() => {
                                                                                 const copy = [...colorOptions];
                                                                                 copy[optIdx].images.splice(imgIdx, 1);
                                                                                 setColorOptions(copy);
-                                                                            }} 
+                                                                            }}
                                                                             className="btn-media-delete"
                                                                         >
                                                                             <Trash2 size={10} />
