@@ -186,7 +186,7 @@ const AdminTopics = () => {
                             <tr>
                                 <th>Thumbnail</th>
                                 <th>ID</th>
-                                <th>Icon</th>
+                                {/* <th>Icon</th> */}
                                 <th>Title</th>
                                 <th>Description</th>
                                 <th>Actions</th>
@@ -207,11 +207,11 @@ const AdminTopics = () => {
                                         />
                                     </td>
                                     <td style={{ fontWeight: 700 }}>#{topic.id}</td>
-                                    <td>
+                                    {/* <td>
                                         <div className="table-icon-wrap">
                                             {iconMap[topic.icon] || <HelpCircle size={18} />}
                                         </div>
-                                    </td>
+                                    </td> */}
                                     <td style={{ fontWeight: 600 }}>{topic.title}</td>
                                     <td style={{ color: 'var(--admin-text-muted)', maxWidth: '280px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
                                         {topic.desc}
@@ -261,7 +261,7 @@ const AdminTopics = () => {
                                 </div>
 
 
-                                <div className="admin-form-group">
+                                {/* <div className="admin-form-group">
                                     <label>Icon Identifier</label>
                                     <select
                                         className="admin-form-control"
@@ -275,7 +275,7 @@ const AdminTopics = () => {
                                         <option value="GraduationCap">GraduationCap (Models/Learn)</option>
                                         <option value="Image">ImageIcon (Frames/Photos)</option>
                                     </select>
-                                </div>
+                                </div> */}
 
                                 <div className="admin-form-group">
                                     <label>Short Description *</label>

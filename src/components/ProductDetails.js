@@ -93,9 +93,9 @@ const ProductDetails = () => {
                 {/* Cinematic Category Header */}
                 <header className="listing-header-premium reveal-hidden">
                     <div className="listing-header-main">
-                        <div className="topic-icon-premium">
+                        {/* <div className="topic-icon-premium">
                             {iconMap[topic.icon] ? React.createElement(iconMap[topic.icon], { size: 48 }) : null}
-                        </div>
+                        </div> */}
                         <div className="topic-text-premium">
                             <h1 className="topic-title-cinematic">{topic.title}</h1>
                             <p className="topic-desc-refined">{topic.fullDesc || topic.desc}</p>

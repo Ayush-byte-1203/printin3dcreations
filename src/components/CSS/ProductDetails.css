@@ -45,7 +45,7 @@
     box-shadow: var(--shadow-lg);
 }
 
-.topic-icon-premium {
+/* .topic-icon-premium {
     width: 100px;
     height: 100px;
     background: var(--color-bg-secondary);
@@ -56,7 +56,7 @@
     color: var(--color-primary);
     flex-shrink: 0;
     transition: all var(--t-base) var(--ease-spring);
-}
+} */
 
 .topic-title-cinematic {
     font-family: var(--font-display);
