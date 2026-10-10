@@ -3,7 +3,6 @@ import { Helmet } from 'react-helmet-async';
 import Hero from './Hero';
 import BestSellers from './BestSellers';
 import Products from './Products';
-import Process from './Process';
 import FAQ from './FAQ';
 import Contact from './Contact';
 import TrustFeatures from './TrustFeatures';

@@ -7,26 +7,12 @@ import {
     SlidersHorizontal, 
     ShoppingCart, 
     ChevronDown, 
-    CheckCircle2,
-    PencilRuler,
-    Key,
-    Palette,
-    Gamepad2,
-    GraduationCap,
-    Image as ImageIcon
+    CheckCircle2
 } from 'lucide-react';
 
 import { Helmet } from 'react-helmet-async';
 import './CSS/ProductDetails.css';
 
-const iconMap = {
-    PencilRuler,
-    Key,
-    Palette,
-    Gamepad2,
-    GraduationCap,
-    Image: ImageIcon
-};
 
 const slugify = (text) =>
     (text || '')

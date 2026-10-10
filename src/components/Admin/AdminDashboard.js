@@ -72,18 +72,18 @@ const AdminDashboard = () => {
                 <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '20px' }}>
                     <div>
                         <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '8px', color: '#FFFFFF' }}>
-                            {isBackendOnline ? '🔗 Live Django Backend Connected' : '🚧 Running in Sandbox Demo Mode'}
+                            {isBackendOnline ? '🔗 Live Django Backend Connected' : '🚧 Backend Unavailable'}
                         </h3>
                         <p style={{ color: '#94A3B8', fontSize: '0.9rem', maxWidth: '600px', margin: 0 }}>
                             {isBackendOnline 
                                 ? 'Database operations are synchronizing perfectly. Any changes made to categories, product descriptions, prices, specs or features will propagate live to all customers instantly.'
-                                : 'The Django backend server is currently offline. You are browsing static catalog entries. In sandbox mode, modifications will remain localized to the current browser tab and will reset upon page reload.'
+                                : 'The backend is unavailable. Catalog data and modifications are disabled until the connection is restored.'
                             }
                         </p>
                     </div>
                     <div className={`admin-status-indicator ${isBackendOnline ? 'online' : 'offline'}`} style={{ padding: '10px 20px', fontSize: '0.9rem' }}>
                         <Activity size={16} />
-                        <span>{isBackendOnline ? 'Django Online' : 'Sandbox Active'}</span>
+                        <span>{isBackendOnline ? 'Django Online' : 'Backend Offline'}</span>
                     </div>
                 </div>
             </div>

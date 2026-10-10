@@ -7,15 +7,26 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 import os
 import uuid
+from rest_framework.permissions import BasePermission, SAFE_METHODS, AllowAny
+from rest_framework.authtoken.models import Token
 
 from .models import Topic, Product
 from .serializers import TopicSerializer, ProductSerializer
 
+class PublicReadAdminWrite(BasePermission):
+    def has_permission(self, request, view):
+        return request.method in SAFE_METHODS or bool(
+            request.user and request.user.is_authenticated and request.user.is_staff
+        )
+
+
 class TopicViewSet(viewsets.ModelViewSet):
+    permission_classes = [PublicReadAdminWrite]
     queryset = Topic.objects.all()
     serializer_class = TopicSerializer
 
 class ProductViewSet(viewsets.ModelViewSet):
+    permission_classes = [PublicReadAdminWrite]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
@@ -27,6 +38,8 @@ class ProductViewSet(viewsets.ModelViewSet):
         return queryset
 
 class AdminLoginView(APIView):
+    permission_classes = [AllowAny]
+    authentication_classes = []
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
@@ -35,7 +48,7 @@ class AdminLoginView(APIView):
         if user is not None and user.is_staff:
             return Response({
                 'success': True,
-                'token': f"admin_token_{uuid.uuid4().hex}", # simple static mock token for stateless simplicity
+                'token': Token.objects.get_or_create(user=user)[0].key,
                 'username': user.username
             }, status=status.HTTP_200_OK)
         else:

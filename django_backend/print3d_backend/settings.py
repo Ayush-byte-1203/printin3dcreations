@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,10 +22,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-tw3ascn1t&w38ij4g=7xtki9f$xx+hz(mdj6gry^fbz7y*7bft'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'false').lower() == 'true'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = 'local-development-only-do-not-use-in-production'
+    else:
+        raise ImproperlyConfigured('Set DJANGO_SECRET_KEY before starting the backend.')
 
 ALLOWED_HOSTS = ['ayush1273.pythonanywhere.com', 'www.printin3d.in', 'printin3d.in', 'localhost', '127.0.0.1']
 
@@ -38,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
     'api',
 ]
@@ -121,7 +127,20 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 # CORS Configuration
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    'https://www.printin3d.in', 'https://printin3d.in',
+]
+if DEBUG:
+    CORS_ALLOWED_ORIGINS += ['http://localhost:3000', 'http://127.0.0.1:3000']
+CSRF_TRUSTED_ORIGINS = ['https://ayush1273.pythonanywhere.com', *CORS_ALLOWED_ORIGINS]
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+SECURE_CONTENT_TYPE_NOSNIFF = True
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ['rest_framework.authentication.TokenAuthentication'],
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAdminUser'],
+}
 
 # Media Files (Uploaded images)
 import os

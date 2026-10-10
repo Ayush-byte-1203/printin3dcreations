@@ -139,3 +139,5 @@ venv/
 db.sqlite3
 media/
 .pytest_cache/
+staticfiles/
+*.md

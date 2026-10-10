@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
-import { RefreshCcw, CheckCircle2, XCircle, Clock, MessageSquare, AlertTriangle } from 'lucide-react';
+import { RefreshCcw, CheckCircle2, XCircle, Clock, MessageSquare } from 'lucide-react';
 import './CSS/PolicyPages.css';
 
 const ReturnPolicy = () => {

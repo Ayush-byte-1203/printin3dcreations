@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { ShoppingCart, Search, Menu, X } from 'lucide-react';
+import { ShoppingCart, Menu, X } from 'lucide-react';
 import './CSS/Navbar.css';
 
 const Navbar = ({ setIsCartOpen }) => {

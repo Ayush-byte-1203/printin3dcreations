@@ -35,14 +35,7 @@ const AdminLogin = () => {
                     setError(data.error || 'Invalid administrator credentials');
                 }
             } else {
-                // Offline fallback mode for sandboxing
-                if (username === 'admin' && password === 'admin123') {
-                    localStorage.setItem('admin_token', 'offline_sandbox_token');
-                    localStorage.setItem('admin_username', 'Sandbox Admin');
-                    navigate('/admin');
-                } else {
-                    setError('Incorrect credentials. Try admin / admin123 (Offline Sandbox Mode)');
-                }
+                setError('The backend is unavailable. Please try again later.');
             }
         } catch (err) {
             console.error("Login request error", err);

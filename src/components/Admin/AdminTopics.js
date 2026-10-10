@@ -1,3 +1,4 @@
+import { adminFetch } from '../../adminApi';
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import {
@@ -5,25 +6,10 @@ import {
     Edit,
     Trash2,
     X,
-    HelpCircle,
-    PencilRuler,
-    Key,
-    Palette,
-    Gamepad2,
-    GraduationCap,
-    Upload,
-    Image as ImageIcon
+    Upload
 } from 'lucide-react';
 import '../CSS/Admin.css';
 
-const iconMap = {
-    PencilRuler: <PencilRuler size={18} />,
-    Key: <Key size={18} />,
-    Palette: <Palette size={18} />,
-    Gamepad2: <Gamepad2 size={18} />,
-    GraduationCap: <GraduationCap size={18} />,
-    Image: <ImageIcon size={18} />
-};
 
 const AdminTopics = () => {
     const { topicsData, isBackendOnline, refreshData } = useData();
@@ -46,7 +32,7 @@ const AdminTopics = () => {
         if (!file) return;
 
         if (!isBackendOnline) {
-            alert('File uploads are disabled in Offline Static Sandbox Mode.');
+            alert('File uploads are disabled in offline mode.');
             return;
         }
 
@@ -55,7 +41,7 @@ const AdminTopics = () => {
 
         setUploading(true);
         try {
-            const response = await fetch('https://ayush1273.pythonanywhere.com/api/upload/', {
+            const response = await adminFetch('https://ayush1273.pythonanywhere.com/api/upload/', {
                 method: 'POST',
                 body: formData
             });
@@ -101,7 +87,7 @@ const AdminTopics = () => {
         setError('');
 
         if (!isBackendOnline) {
-            setError('Modifications are disabled in Offline Static Sandbox Mode.');
+            setError('Modifications are disabled in offline mode.');
             return;
         }
 
@@ -117,14 +103,14 @@ const AdminTopics = () => {
             let response;
             if (editingTopic) {
                 // Update
-                response = await fetch(`https://ayush1273.pythonanywhere.com/api/topics/${editingTopic.id}/`, {
+                response = await adminFetch(`https://ayush1273.pythonanywhere.com/api/topics/${editingTopic.id}/`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
             } else {
                 // Create
-                response = await fetch('https://ayush1273.pythonanywhere.com/api/topics/', {
+                response = await adminFetch('https://ayush1273.pythonanywhere.com/api/topics/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -148,13 +134,13 @@ const AdminTopics = () => {
 
     const handleDelete = async (id, name) => {
         if (!isBackendOnline) {
-            alert('Modifications are disabled in Offline Static Sandbox Mode.');
+            alert('Modifications are disabled in offline mode.');
             return;
         }
 
         if (window.confirm(`Are you sure you want to delete category "${name}"? This will delete all products under it!`)) {
             try {
-                const response = await fetch(`https://ayush1273.pythonanywhere.com/api/topics/${id}/`, {
+                const response = await adminFetch(`https://ayush1273.pythonanywhere.com/api/topics/${id}/`, {
                     method: 'DELETE'
                 });
 

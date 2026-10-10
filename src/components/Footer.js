@@ -7,7 +7,6 @@ import {
     Instagram,
     Facebook,
     MessageCircle,
-    ChevronUp,
     ShieldCheck,
     Truck,
     Clock

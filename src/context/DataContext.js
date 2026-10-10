@@ -1,20 +1,21 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { topicsData as staticTopics, subProductsMap as staticSubProducts } from '../data/productsData';
 
 const DataContext = createContext();
 
 export const useData = () => useContext(DataContext);
 
 export const DataProvider = ({ children }) => {
-    const [topicsData, setTopicsData] = useState(staticTopics);
-    const [subProductsMap, setSubProductsMap] = useState(staticSubProducts);
+    const [topicsData, setTopicsData] = useState([]);
+    const [subProductsMap, setSubProductsMap] = useState({});
     const [loading, setLoading] = useState(true);
     const [isBackendOnline, setIsBackendOnline] = useState(false);
 
     const refreshData = async () => {
         try {
-            const topicsRes = await fetch('https://ayush1273.pythonanywhere.com/api/topics/');
-            const productsRes = await fetch('https://ayush1273.pythonanywhere.com/api/products/');
+            const [topicsRes, productsRes] = await Promise.all([
+                fetch('https://ayush1273.pythonanywhere.com/api/topics/', { signal: AbortSignal.timeout(15000) }),
+                fetch('https://ayush1273.pythonanywhere.com/api/products/', { signal: AbortSignal.timeout(15000) }),
+            ]);
 
             if (topicsRes.ok && productsRes.ok) {
                 const topics = await topicsRes.json();
@@ -65,9 +66,9 @@ export const DataProvider = ({ children }) => {
                 throw new Error("API returned non-OK status code");
             }
         } catch (err) {
-            console.warn("⚠️ Django backend offline. Falling back to static productsData.js safely.", err);
-            setTopicsData(staticTopics);
-            setSubProductsMap(staticSubProducts);
+            console.warn("⚠️ Django backend offline. Catalog unavailable.", err);
+            setTopicsData([]);
+            setSubProductsMap({});
             setIsBackendOnline(false);
         } finally {
             setLoading(false);
@@ -80,6 +81,12 @@ export const DataProvider = ({ children }) => {
 
     return (
         <DataContext.Provider value={{ topicsData, subProductsMap, loading, isBackendOnline, refreshData }}>
+            {!loading && !isBackendOnline && (
+                <div role="alert" style={{ padding: '12px', textAlign: 'center' }}>
+                    The product catalog is temporarily unavailable. Please try again later.
+                    <button onClick={refreshData}>Retry</button>
+                </div>
+            )}
             {children}
         </DataContext.Provider>
     );

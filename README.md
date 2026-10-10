@@ -27,7 +27,7 @@
 
 ## 🏗 Project Overview
 
-Print-IN 3D Creations is a product showcase + ordering website for a 3D printing shop. There is **no backend or payment gateway** — all orders are placed via WhatsApp with the customer's cart items, customization details, and delivery address pre-filled into the message.
+Print-IN 3D Creations is a product showcase + ordering website for a 3D printing shop. The Django backend provides the live catalog and authenticated admin API; there is **no payment gateway** — all orders are placed via WhatsApp with the customer's cart items, customization details, and delivery address pre-filled into the message.
 
 ### Key Features
 - 🛍️ Product browsing by category and individual product pages
@@ -497,5 +497,10 @@ Business WhatsApp: [+91 70435 91952](https://wa.me/917043591952)
 # 3d
 # 3d
 # print3d
-#   g h o d u - w e b s i t e  
+#   g h o d u - w e b s i t e 
+ 
  # print_working_updates
+
+## Backend deployment
+
+See [PythonAnywhere update instructions](django_backend/DEPLOYMENT.md) before deploying backend changes.

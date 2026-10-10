@@ -29,7 +29,7 @@ const SearchPage = () => {
         } else {
             setResults([]);
         }
-    }, [location.search]);
+    }, [location.search, subProductsMap]);
 
     const handleSearch = (e) => {
         e.preventDefault();

@@ -97,7 +97,7 @@ const AdminLayout = () => {
                     <div className="admin-topbar-right">
                         <div className={`admin-status-indicator ${isBackendOnline ? 'online' : 'offline'}`}>
                             <Activity size={12} />
-                            <span>{isBackendOnline ? 'Live Django Server' : 'Offline Static Sandbox'}</span>
+                            <span>{isBackendOnline ? 'Live Django Server' : 'Backend Unavailable'}</span>
                         </div>
                         <div className="admin-user-profile">
                             <span className="admin-avatar">{adminName[0].toUpperCase()}</span>

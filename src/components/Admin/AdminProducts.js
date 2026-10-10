@@ -1,3 +1,4 @@
+import { adminFetch } from '../../adminApi';
 import React, { useState, useMemo } from 'react';
 import { useData } from '../../context/DataContext';
 import {
@@ -173,7 +174,7 @@ const AdminProducts = () => {
         if (!file) return;
 
         if (!isBackendOnline) {
-            alert('File uploads are disabled in Offline Static Sandbox Mode.');
+            alert('File uploads are disabled in offline mode.');
             return;
         }
 
@@ -182,7 +183,7 @@ const AdminProducts = () => {
 
         setUploading(true);
         try {
-            const response = await fetch('https://ayush1273.pythonanywhere.com/api/upload/', {
+            const response = await adminFetch('https://ayush1273.pythonanywhere.com/api/upload/', {
                 method: 'POST',
                 body: formData
             });
@@ -207,7 +208,7 @@ const AdminProducts = () => {
         setError('');
 
         if (!isBackendOnline) {
-            setError('Modifications are disabled in Offline Static Sandbox Mode.');
+            setError('Modifications are disabled in offline mode.');
             return;
         }
 
@@ -261,14 +262,14 @@ const AdminProducts = () => {
             let response;
             if (editingProduct && editingProduct.dbId) {
                 // Update
-                response = await fetch(`https://ayush1273.pythonanywhere.com/api/products/${editingProduct.dbId}/`, {
+                response = await adminFetch(`https://ayush1273.pythonanywhere.com/api/products/${editingProduct.dbId}/`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
             } else {
                 // Create
-                response = await fetch('https://ayush1273.pythonanywhere.com/api/products/', {
+                response = await adminFetch('https://ayush1273.pythonanywhere.com/api/products/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -292,13 +293,13 @@ const AdminProducts = () => {
 
     const handleDelete = async (dbId, strId, prodName) => {
         if (!isBackendOnline) {
-            alert('Modifications are disabled in Offline Static Sandbox Mode.');
+            alert('Modifications are disabled in offline mode.');
             return;
         }
 
         if (window.confirm(`Are you sure you want to delete product "${prodName}" (#${strId})?`)) {
             try {
-                const response = await fetch(`https://ayush1273.pythonanywhere.com/api/products/${dbId}/`, {
+                const response = await adminFetch(`https://ayush1273.pythonanywhere.com/api/products/${dbId}/`, {
                     method: 'DELETE'
                 });
 
@@ -712,7 +713,7 @@ const AdminProducts = () => {
                                                                         const formData = new FormData();
                                                                         formData.append('image', file);
                                                                         try {
-                                                                            const res = await fetch('https://ayush1273.pythonanywhere.com/api/upload/', {
+                                                                            const res = await adminFetch('https://ayush1273.pythonanywhere.com/api/upload/', {
                                                                                 method: 'POST',
                                                                                 body: formData
                                                                             });
