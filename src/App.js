@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useNavigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
@@ -26,7 +26,19 @@ import AdminTopics from './components/Admin/AdminTopics';
 import AdminProducts from './components/Admin/AdminProducts';
 import { useLocation } from 'react-router-dom';
 
+function AdminEntry({ unlock }) {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        unlock(true);
+        navigate('/admin', { replace: true });
+    }, [unlock, navigate]);
+
+    return null;
+}
+
 function AppContent({ isCheckoutOpen, setIsCheckoutOpen }) {
+    const [adminEntryAllowed, setAdminEntryAllowed] = useState(false);
     const location = useLocation();
     const isAdmin = location.pathname.startsWith('/admin');
 
@@ -51,11 +63,14 @@ function AppContent({ isCheckoutOpen, setIsCheckoutOpen }) {
                 <Route path="/search" element={<SearchPage />} />
 
                 {/* Velzon-themed Admin Control Studio Routes */}
-                <Route path="/admin/login" element={<AdminLogin />} />
-                <Route path="/admin" element={<AdminLayout />}>
-                    <Route index element={<AdminDashboard />} />
-                    <Route path="categories" element={<AdminTopics />} />
-                    <Route path="products" element={<AdminProducts />} />
+                <Route path="/696969" element={<AdminEntry unlock={setAdminEntryAllowed} />} />
+                <Route element={adminEntryAllowed ? <Outlet /> : <Navigate to="/" replace />}>
+                    <Route path="/admin/login" element={<AdminLogin />} />
+                    <Route path="/admin" element={<AdminLayout />}>
+                        <Route index element={<AdminDashboard />} />
+                        <Route path="categories" element={<AdminTopics />} />
+                        <Route path="products" element={<AdminProducts />} />
+                    </Route>
                 </Route>
             </Routes>
 
