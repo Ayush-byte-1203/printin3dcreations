@@ -88,3 +88,13 @@ test('An upstream outage returns retryable 503 rather than falsely removing prod
         const about = response(); await page({ query: { path: 'about' } }, about); assert.equal(about.statusCode, 200);
     } finally { global.fetch = savedFetch; }
 });
+
+test('Homepage rendering takes precedence over the static React index while assets retain filesystem routing', () => {
+    const config = require('../vercel.json');
+    const filesystem = config.routes.findIndex(r => r.handle === 'filesystem');
+    const home = config.routes.findIndex(r => r.src && !r.has && new RegExp(r.src).test('/'));
+    assert.ok(home < filesystem);
+    assert.equal(config.routes[home].dest, '/api/page?path=');
+    assert.ok(!config.routes.slice(0, filesystem).some(r => r.src && !r.has && new RegExp(r.src).test('/static/js/main.js')));
+    assert.equal(config.routes.at(-1).dest, '/api/page?path=$1');
+});

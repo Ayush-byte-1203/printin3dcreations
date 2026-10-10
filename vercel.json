@@ -1,36 +1,4 @@
 {
-  "redirects": [
-    {
-      "source": "/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "printin3d.in"
-        }
-      ],
-      "destination": "https://www.printin3d.in/:path*",
-      "permanent": true
-    },
-    {
-      "source": "/index.html",
-      "destination": "/",
-      "permanent": true
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/sitemap.xml",
-      "destination": "/api/sitemap"
-    },
-    {
-      "source": "/",
-      "destination": "/api/page?path="
-    },
-    {
-      "source": "/:path*",
-      "destination": "/api/page?path=:path*"
-    }
-  ],
   "functions": {
     "api/page.js": {
       "includeFiles": "{build/index.html,server/render.cjs}",
@@ -44,5 +12,42 @@
       "includeFiles": "server/render.cjs",
       "maxDuration": 30
     }
-  }
+  },
+  "routes": [
+    {
+      "src": "^/(.*)$",
+      "has": [
+        {
+          "type": "host",
+          "value": "printin3d.in"
+        }
+      ],
+      "headers": {
+        "Location": "https://www.printin3d.in/$1"
+      },
+      "status": 308
+    },
+    {
+      "src": "^/index.html$",
+      "headers": {
+        "Location": "/"
+      },
+      "status": 308
+    },
+    {
+      "src": "^/$",
+      "dest": "/api/page?path="
+    },
+    {
+      "src": "^/sitemap.xml$",
+      "dest": "/api/sitemap"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "^/(.*)$",
+      "dest": "/api/page?path=$1"
+    }
+  ]
 }
