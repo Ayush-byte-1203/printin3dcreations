@@ -64,7 +64,7 @@ const AboutUs = () => {
                         <div className="why-card reveal-hidden reveal-stagger-2">
                             <div className="why-icon-wrap"><Zap size={24} /></div>
                             <h3>Rapid Prototyping</h3>
-                            <p>From custom keychains to industrial parts, our streamlined workflow ensures a 5-7 day delivery pan-India.</p>
+                            <p>From custom keychains to prototypes, we offer delivery across India. Standard delivery takes 5-7 business days after manufacturing; confirm your project timeline when ordering.</p>
                         </div>
                         <div className="why-card reveal-hidden reveal-stagger-3">
                             <div className="why-icon-wrap"><Heart size={24} /></div>

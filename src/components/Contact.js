@@ -82,7 +82,7 @@ const Contact = () => {
                                 <div className="benefit-icon-p"><Clock size={18} /></div>
                                 <div className="benefit-text-p">
                                     <h4>Fast Turnaround</h4>
-                                    <p>Standard delivery in 5-7 business days.</p>
+                                    <p>Delivery in 5-7 business days after manufacturing.</p>
                                 </div>
                             </div>
                         </div>

@@ -37,7 +37,7 @@ export function getPageMeta(pathname, catalog) {
     } else if (noindex) [title, description] = ['Print-IN 3D', 'Print-IN 3D Creations'];
     else { title = 'Page Not Found | Print-IN 3D'; description = 'This page or product is no longer available. Explore the current Print-IN 3D collection.'; status = 404; canonical = null; }
 
-    const organization = { '@type': 'Organization', '@id': `${SITE_URL}/#organization`, name: 'Print-IN 3D Creations', url: `${SITE_URL}/`, logo: `${SITE_URL}/favicon.webp`, contactPoint: { '@type': 'ContactPoint', contactType: 'customer service', telephone: '+91-7043591952' } };
+    const organization = { '@type': 'Organization', '@id': `${SITE_URL}/#organization`, name: 'Print-IN 3D Creations', url: `${SITE_URL}/`, logo: `${SITE_URL}/favicon.webp`, email: 'printin3dcreations@gmail.com', sameAs: ['https://www.instagram.com/printin_3dcreations/'], contactPoint: { '@type': 'ContactPoint', contactType: 'customer service', telephone: '+91-7043591952' } };
     const graph = status === 200 && !noindex ? [organization, {
         '@type': 'WebSite', '@id': `${SITE_URL}/#website`, name: 'Print-IN 3D Creations', url: `${SITE_URL}/`, publisher: { '@id': organization['@id'] }
     }, { '@type': product ? 'ItemPage' : topic ? 'CollectionPage' : path === '/about' ? 'AboutPage' : path === '/contact' ? 'ContactPage' : 'WebPage', '@id': `${canonical}#webpage`, url: canonical, name: title, description, isPartOf: { '@id': `${SITE_URL}/#website` }, inLanguage: 'en-IN' }] : [];

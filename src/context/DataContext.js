@@ -11,7 +11,7 @@ export const DataProvider = ({ children, initialData = null }) => {
     const refreshData = async () => {
         try {
             let data;
-            if (process.env.NODE_ENV === 'development') {
+            if (process.env.NODE_ENV === 'development' || window.location.pathname.startsWith('/admin')) {
                 const responses = await Promise.all(['topics', 'products'].map(endpoint =>
                     fetch(`${API_BASE}/${endpoint}/`, { signal: AbortSignal.timeout(15000) })));
                 if (responses.some(r => !r.ok)) throw new Error('Catalog API unavailable');

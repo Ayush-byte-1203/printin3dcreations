@@ -54,7 +54,7 @@ const ContactPage = () => {
     };
 
     const faqs = [
-        { q: "How long does delivery take?", a: "Standard shipping takes 5-7 business days pan-India." },
+        { q: "How long does delivery take?", a: "Standard delivery takes 5-7 business days after manufacturing. Confirm the estimate for your location when ordering." },
         { q: "What materials do you use?", a: "We primarily use premium, eco-friendly PLA and PETG." },
         { q: "Can I get a bulk discount?", a: "Yes, for orders over 10 units, we offer volume pricing." }
     ];
