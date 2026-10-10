@@ -55,8 +55,17 @@
 }
 
 @keyframes spotlightPulse {
-    0%, 100% { opacity: 0.5; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.1); }
+
+    0%,
+    100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
 }
 
 .hero-overlay-grain {
@@ -121,8 +130,15 @@
 }
 
 @keyframes slideUpReveal {
-    from { transform: translateY(100%); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 /* ── CTA Actions ── */
@@ -222,23 +238,60 @@
     white-space: nowrap;
 }
 
-.trust-item-mini svg { color: var(--color-primary); }
+.trust-item-mini svg {
+    color: var(--color-primary);
+}
 
 /* ── Responsive Overrides ── */
 @media (max-width: 1024px) {
-    .hero { height: 90vh; min-height: 600px; }
+    .hero {
+        height: 90vh;
+        min-height: 600px;
+    }
 }
 
 @media (max-width: 768px) {
-    .hero { height: 85vh; min-height: 580px; }
-    .hero-container { padding-top: 60px; }
-    .hero-trust-bar-minimal { flex-direction: column; gap: 16px; border-top: none; }
-    .hero-cta-sequence { flex-direction: column; width: 100%; max-width: 320px; margin: 0 auto 40px; gap: 12px; }
-    .btn-cinematic-primary, .btn-cinematic-secondary { width: 100%; padding: 16px 32px; }
+    .hero {
+        height: 85vh;
+        min-height: 580px;
+    }
+
+    .hero-container {
+        padding-top: 60px;
+    }
+
+    .hero-trust-bar-minimal {
+        flex-direction: column;
+        gap: 16px;
+        border-top: none;
+    }
+
+    .hero-cta-sequence {
+        flex-direction: column;
+        width: 100%;
+        max-width: 320px;
+        margin: 0 auto 40px;
+        gap: 12px;
+    }
+
+    .btn-cinematic-primary,
+    .btn-cinematic-secondary {
+        width: 100%;
+        padding: 16px 32px;
+    }
 }
 
 @media (max-width: 480px) {
-    .hero { height: 80vh; min-height: 500px; }
-    .hero-container { padding-top: 40px; }
-    .hero-desc-refined { margin-bottom: 32px; }
+    .hero {
+        height: 80vh;
+        min-height: 500px;
+    }
+
+    .hero-container {
+        padding-top: 40px;
+    }
+
+    .hero-desc-refined {
+        margin-bottom: 32px;
+    }
 }
