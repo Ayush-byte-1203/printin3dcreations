@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useNavigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import Navbar from './components/Navbar';
@@ -18,13 +18,15 @@ import ScrollToTop from './components/ScrollToTop';
 import { CartProvider } from './context/CartContext';
 import './index.css';
 
-import SupportWidget from './components/SupportWidget';
-import AdminLayout from './components/Admin/AdminLayout';
-import AdminLogin from './components/Admin/AdminLogin';
-import AdminDashboard from './components/Admin/AdminDashboard';
-import AdminTopics from './components/Admin/AdminTopics';
-import AdminProducts from './components/Admin/AdminProducts';
 import { useLocation } from 'react-router-dom';
+import Seo from './components/Seo';
+import NotFound from './components/NotFound';
+import SupportWidget from './components/SupportWidget';
+const AdminLayout = lazy(() => import('./components/Admin/AdminLayout'));
+const AdminLogin = lazy(() => import('./components/Admin/AdminLogin'));
+const AdminDashboard = lazy(() => import('./components/Admin/AdminDashboard'));
+const AdminTopics = lazy(() => import('./components/Admin/AdminTopics'));
+const AdminProducts = lazy(() => import('./components/Admin/AdminProducts'));
 
 function AdminEntry({ unlock }) {
     const navigate = useNavigate();
@@ -37,19 +39,21 @@ function AdminEntry({ unlock }) {
     return null;
 }
 
-function AppContent({ isCheckoutOpen, setIsCheckoutOpen }) {
+export function AppContent({ isCheckoutOpen, setIsCheckoutOpen }) {
     const [adminEntryAllowed, setAdminEntryAllowed] = useState(false);
     const location = useLocation();
     const isAdmin = location.pathname.startsWith('/admin');
 
     return (
         <div className="App">
+            <Seo />
             {!isAdmin && <Navbar />}
             {!isAdmin && <Cart setIsCheckoutOpen={setIsCheckoutOpen} />}
             <CheckoutModal 
                 isOpen={isCheckoutOpen} 
                 onClose={() => setIsCheckoutOpen(false)} 
             />
+            <Suspense fallback={<div role="status">Loading...</div>}>
             <Routes>
                 {/* Customer-facing Routes */}
                 <Route path="/" element={<Home />} />
@@ -72,7 +76,9 @@ function AppContent({ isCheckoutOpen, setIsCheckoutOpen }) {
                         <Route path="products" element={<AdminProducts />} />
                     </Route>
                 </Route>
+                <Route path="*" element={<NotFound />} />
             </Routes>
+            </Suspense>
 
             {!isAdmin && <Footer />}
             {!isAdmin && <SupportWidget />}

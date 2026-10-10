@@ -5,14 +5,13 @@ import App from './App';
 import { DataProvider } from './context/DataContext';
 import reportWebVitals from './reportWebVitals';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <DataProvider>
-      <App />
-    </DataProvider>
-  </React.StrictMode>
-);
+const element = document.getElementById('root');
+const bootstrap = document.getElementById('catalog-data');
+let initialData = null;
+try { initialData = bootstrap ? JSON.parse(bootstrap.textContent) : null; } catch { /* Refresh from API. */ }
+const app = <React.StrictMode><DataProvider initialData={initialData}><App /></DataProvider></React.StrictMode>;
+if (element.hasChildNodes()) ReactDOM.hydrateRoot(element, app);
+else ReactDOM.createRoot(element).render(app);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

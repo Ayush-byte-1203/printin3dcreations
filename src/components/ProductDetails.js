@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { 
@@ -10,8 +10,8 @@ import {
     CheckCircle2
 } from 'lucide-react';
 
-import { Helmet } from 'react-helmet-async';
 import './CSS/ProductDetails.css';
+import NotFound from './NotFound';
 
 
 const slugify = (text) =>
@@ -23,7 +23,7 @@ const slugify = (text) =>
         .replace(/^-+|-+$/g, '');
 
 const ProductDetails = () => {
-    const { topicsData, subProductsMap } = useData();
+    const { topicsData, subProductsMap, loading } = useData();
     const { topicId } = useParams();
     const navigate = useNavigate();
     const revealRef = useScrollReveal({ threshold: 0.01, rootMargin: '50px' });
@@ -47,28 +47,11 @@ const ProductDetails = () => {
         return items;
     }, [products, sortBy]);
 
-    if (!topic) return <div className="error-container">Category not found</div>;
-
-    const handleProductClick = (productId) => {
-        navigate(`/product/${topicId}/${productId}`);
-    };
+    if (loading) return <div className="error-container" role="status">Loading collection...</div>;
+    if (!topic) return <NotFound />;
 
     return (
         <div className="product-listing-page">
-            <Helmet>
-                <title>{`${topic.title} | Premium 3D Printed Collection`}</title>
-                <meta name="description" content={`Browse our premium selection of custom 3D printed ${topic.title.toLowerCase()}. Handcrafted with high-quality materials and fine finishes. Order online with fast pan-India shipping!`} />
-                <meta name="keywords" content={`3d printing, 3d printed ${topic.title.toLowerCase()}, custom ${topic.title.toLowerCase()}, buy 3d prints india, online 3d printing service, print in 3d`} />
-                <meta property="og:title" content={`${topic.title} | Premium 3D Printed Collection`} />
-                <meta property="og:description" content={`Browse our premium selection of custom 3D printed ${topic.title.toLowerCase()}. Handcrafted with high-quality materials and fine finishes. Order online with fast pan-India shipping!`} />
-                <meta property="og:type" content="website" />
-                <meta property="og:url" content={`https://www.printin3d.in/product/${topicId}`} />
-                <meta property="og:image" content="https://www.printin3d.in/favicon.webp" />
-                <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:title" content={`${topic.title} | Premium 3D Printed Collection`} />
-                <meta name="twitter:description" content={`Browse our premium selection of custom 3D printed ${topic.title.toLowerCase()}. Handcrafted with high-quality materials and fine finishes. Order online with fast pan-India shipping!`} />
-                <meta name="twitter:image" content="https://www.printin3d.in/favicon.webp" />
-            </Helmet>
             <div className="container" ref={revealRef}>
                 {/* Back Link */}
                 <button className="back-link-premium" onClick={() => navigate('/')}>
@@ -128,10 +111,11 @@ const ProductDetails = () => {
                 <div className="listing-grid-premium">
                     {sortedProducts.length > 0 ? (
                         sortedProducts.map((product, index) => (
-                            <div 
+                            <Link
                                 key={product.id} 
                                 className={`listing-card-premium reveal-hidden reveal-stagger-${(index % 4) + 1}`}
-                                onClick={() => handleProductClick(product.id)}
+                                to={`/product/${topic.id}/${product.id}`}
+                                style={{ color: 'inherit', textDecoration: 'none' }}
                             >
                                 <div className="listing-card-media">
                                     {product.images && product.images[0] ? (
@@ -139,9 +123,10 @@ const ProductDetails = () => {
                                             src={product.images[0]} 
                                             alt={product.name} 
                                             className="listing-card-img"
+                                            loading="lazy" decoding="async"
                                             onError={(e) => {
                                                 e.target.onerror = null;
-                                                e.target.src = 'https://via.placeholder.com/350x300?text=Product';
+                                                e.target.src = '/images/product-unavailable.svg';
                                             }}
                                         />
                                     ) : (
@@ -151,9 +136,9 @@ const ProductDetails = () => {
                                         <span className="listing-card-badge">Custom</span>
                                     )}
                                     <div className="listing-card-overlay">
-                                        <button className="overlay-view-btn">
+                                        <span className="overlay-view-btn">
                                             View Details
-                                        </button>
+                                        </span>
                                     </div>
                                 </div>
                                 <div className="listing-card-info">
@@ -172,7 +157,7 @@ const ProductDetails = () => {
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </Link>
                         ))
                     ) : (
                         <div className="empty-listing-premium">

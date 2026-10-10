@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import './CSS/FAQ.css';
 
-const faqData = [
+export const faqData = [
     {
         category: "General",
         icon: Info,
@@ -23,7 +23,7 @@ const faqData = [
             },
             {
                 q: "Is the material durable?",
-                a: "Yes! We use high-strength PLA and PETG. While 3D prints are lightweight, they are quite durable for décor, collectibles, and functional prototypes."
+                a: "We use PLA and PETG, depending on the product. Check the material listed in each product specification. The right choice depends on whether the print is decorative or functional; discuss heat, outdoor use and load requirements with us before ordering."
             }
         ]
     },
@@ -33,12 +33,21 @@ const faqData = [
         items: [
             {
                 q: "How do I place a custom order?",
-                a: "Browse our products, select your customization options, and hit 'Order via WhatsApp'. This sends us your exact choices instantly for confirmation."
+                a: "Choose a product and any available text or colour options, add it to your cart, and complete the order details to send your request through WhatsApp. For a new design, contact us with your idea, dimensions and quantity so we can discuss a quote."
             },
             {
                 q: "Can I cancel my order?",
-                a: "Since products are made-to-order, cancellations are only possible within 12 hours of placing the order, before the printing process begins."
+                a: "Our return policy allows cancellations only within 2 hours of order placement. Contact us promptly on WhatsApp and read the cancellation terms before payment; custom prints are made to order."
             }
+        ]
+    },
+    {
+        category: "Custom Printing",
+        icon: Package,
+        items: [
+            { q: "How much does custom 3D printing cost?", a: "Catalog products show their price in rupees. A custom design needs an individual quote because size, material, detail and quantity affect the work involved. Share your requirements on WhatsApp; we will confirm the price and delivery details before you order." },
+            { q: "Can you print my own design or prototype?", a: "Yes. Our custom design service starts with your design, sketch or concept. Tell us the intended use, dimensions, preferred colours and quantity on WhatsApp. We will discuss what can be printed and confirm the design requirements before production." },
+            { q: "Do you deliver 3D printed gifts across India?", a: "Yes, Print-IN 3D offers delivery across India for our 3D printed products. You can order personalized keychains, home decor, desk accessories and models from the catalog. Delivery timing depends on manufacturing and your location; confirm the estimate when ordering." }
         ]
     },
     {
@@ -47,7 +56,7 @@ const faqData = [
         items: [
             {
                 q: "How long does shipping take?",
-                a: "Standard delivery takes 5-7 business days. Printing typically takes 1-3 days, followed by express shipping pan-India."
+                a: "Printing typically takes 1-3 days. Standard delivery takes 5-7 business days after manufacturing, depending on your location and courier. Confirm your delivery estimate with us on WhatsApp before placing a time-sensitive order."
             },
             {
                 q: "Do you offer tracking?",
@@ -69,6 +78,7 @@ const faqData = [
 
 const FAQ = ({ standalone = false }) => {
     const revealRef = useScrollReveal();
+    const Heading = standalone ? 'h1' : 'h2';
     const [openIndex, setOpenIndex] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [activeCategory, setActiveCategory] = useState('All');
@@ -103,7 +113,7 @@ const FAQ = ({ standalone = false }) => {
                 {/* ── Support Hero ── */}
                 <div className="header-centered-p reveal-hidden">
                     <span className="eyebrow">Help Center</span>
-                    <h1 className="faq-title-main">Common Questions</h1>
+                    <Heading className="faq-title-main">Common Questions</Heading>
                     <p className="faq-subtitle">
                         Can't find what you're looking for? Reach out to our human support team.
                     </p>
@@ -152,13 +162,13 @@ const FAQ = ({ standalone = false }) => {
                                             const isOpen = openIndex === id;
                                             return (
                                                 <div key={id} className={`faq-row ${isOpen ? 'active' : ''}`}>
-                                                    <button className="faq-trigger" onClick={() => toggleFAQ(id)}>
+                                                    <button className="faq-trigger" aria-expanded={isOpen} aria-controls={`faq-answer-${id}`} onClick={() => toggleFAQ(id)}>
                                                         <span className="q-text">{item.q}</span>
                                                         <div className="q-icon">
                                                             {isOpen ? <Minus size={18} /> : <Plus size={18} />}
                                                         </div>
                                                     </button>
-                                                    <div className="faq-content">
+                                                    <div className="faq-content" id={`faq-answer-${id}`}>
                                                         <div className="faq-content-inner">
                                                             <p>{item.a}</p>
                                                         </div>

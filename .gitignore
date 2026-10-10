@@ -141,3 +141,6 @@ media/
 .pytest_cache/
 staticfiles/
 *.md
+
+# Generated server bundle
+/server/

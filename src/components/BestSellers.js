@@ -35,6 +35,10 @@ const BestSellers = () => {
 
     const handleAddToCart = (e, item) => {
         e.stopPropagation();
+        if (item.customizable || item.hasColors || item.price === 0) {
+            handleCardClick(item);
+            return;
+        }
         addToCart({
             id: item.id,
             title: `${item.topic.title}: ${item.name}`,
@@ -63,7 +67,7 @@ const BestSellers = () => {
                     </div>
                     <h2 className="section-title-premium">Our Bestsellers</h2>
                     <p className="section-desc-premium">
-                        Meticulously crafted, highly-rated pieces that define our standard of excellence.
+                        Explore 3D printed keychains, desk accessories and models from our studio.
                     </p>
                 </div>
 
@@ -80,9 +84,10 @@ const BestSellers = () => {
                                         src={item.images[0]}
                                         alt={item.name}
                                         className="bs-card-img-premium"
+                                        loading="lazy" decoding="async"
                                         onError={(e) => {
                                             e.target.onerror = null;
-                                            e.target.src = 'https://via.placeholder.com/300x280?text=Product';
+                                            e.target.src = '/images/product-unavailable.svg';
                                         }}
                                     />
                                 ) : (
@@ -94,7 +99,7 @@ const BestSellers = () => {
                             </div>
                             <div className="bs-card-content-premium">
                                 <div className="bs-card-top">
-                                    <h3 className="bs-card-title-premium">{item.name}</h3>
+                                    <h3 className="bs-card-title-premium"><Link to={`/product/${item.topicId}/${item.id}`} onClick={e => e.stopPropagation()} style={{ color: 'inherit', textDecoration: 'none' }}>{item.name}</Link></h3>
                                     <p className="bs-card-description-premium">{item.desc}</p>
                                 </div>
                                 <div className="bs-card-bottom-premium">
@@ -107,9 +112,9 @@ const BestSellers = () => {
                                     </div>
                                     <button
                                         className="bs-action-btn-premium"
-                                        onClick={(e) => item.price > 0 ? handleAddToCart(e, item) : e.stopPropagation()}
+                                        onClick={(e) => handleAddToCart(e, item)}
                                     >
-                                        {item.price === 0 ? (
+                                        {item.price === 0 || item.customizable || item.hasColors ? (
                                             <>Customize <ArrowRight size={16} /></>
                                         ) : (
                                             <>Add to Cart</>

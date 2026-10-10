@@ -14,8 +14,8 @@ import {
     PenTool, 
     HelpCircle
 } from 'lucide-react';
-import { Helmet } from 'react-helmet-async';
 import './CSS/SubProductDetails.css';
+import NotFound from './NotFound';
 
 const slugify = (text) =>
     (text || '')
@@ -26,7 +26,7 @@ const slugify = (text) =>
         .replace(/^-+|-+$/g, '');
 
 const SubProductDetails = () => {
-    const { topicsData, subProductsMap } = useData();
+    const { topicsData, subProductsMap, loading } = useData();
     const { topicId, productId } = useParams();
     const navigate = useNavigate();
     const { addToCart } = useCart();
@@ -66,7 +66,8 @@ const SubProductDetails = () => {
         setActiveImg(0);
     }, [productId]);
 
-    if (!product || !topic) return <div className="error-container">Product not found</div>;
+    if (loading) return <div className="error-container" role="status">Loading product...</div>;
+    if (!product || !topic) return <NotFound />;
 
     const handleAddToCart = () => {
         setError('');
@@ -95,20 +96,6 @@ const SubProductDetails = () => {
 
     return (
         <div className="pdp-premium">
-            <Helmet>
-                <title>{`${product.name} | Premium 3D Printed ${topic.title}`}</title>
-                <meta name="description" content={`Order the ${product.name} online from Print-IN 3D. ${product.desc} Handcrafted in India with high layer precision and durable materials.`} />
-                <meta name="keywords" content={`3d printing, ${product.name.toLowerCase()}, buy ${product.name.toLowerCase()} online, custom 3d printed ${topic.title.toLowerCase()}, 3d printed gifts, print in 3d`} />
-                <meta property="og:title" content={`${product.name} | Premium 3D Printed ${topic.title}`} />
-                <meta property="og:description" content={`Order the ${product.name} online from Print-IN 3D. ${product.desc} Handcrafted in India with high layer precision and durable materials.`} />
-                <meta property="og:type" content="website" />
-                <meta property="og:url" content={`https://www.printin3d.in/product/${topicId}/${productId}`} />
-                <meta property="og:image" content={product.images && product.images[0] ? product.images[0] : "https://www.printin3d.in/favicon.webp"} />
-                <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:title" content={`${product.name} | Premium 3D Printed ${topic.title}`} />
-                <meta name="twitter:description" content={`Order the ${product.name} online from Print-IN 3D. ${product.desc} Handcrafted in India with high layer precision and durable materials.`} />
-                <meta name="twitter:image" content={product.images && product.images[0] ? product.images[0] : "https://www.printin3d.in/favicon.webp"} />
-            </Helmet>
             <div className="container" ref={revealRef}>
                 {/* Back Navigation */}
                 <button className="pdp-back-btn" onClick={() => navigate(`/product/${topicId}`)}>
@@ -125,9 +112,10 @@ const SubProductDetails = () => {
                                     src={galleryImages[activeImg]} 
                                     alt={product.name} 
                                     className="pdp-main-image"
+                                    fetchPriority="high" decoding="async"
                                     onError={(e) => {
                                         e.target.onerror = null;
-                                        e.target.src = 'https://via.placeholder.com/600x600?text=Premium+3D+Creation';
+                                        e.target.src = '/images/product-unavailable.svg';
                                     }}
                                 />
                             ) : (
@@ -146,7 +134,7 @@ const SubProductDetails = () => {
                                         alt={`View ${idx + 1}`}
                                         onError={(e) => {
                                             e.target.onerror = null;
-                                            e.target.src = 'https://via.placeholder.com/100x100?text=3D';
+                                            e.target.src = '/images/product-unavailable.svg';
                                         }}
                                     />
                                 </div>

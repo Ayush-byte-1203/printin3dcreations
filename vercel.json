@@ -10,12 +10,39 @@
       ],
       "destination": "https://www.printin3d.in/:path*",
       "permanent": true
+    },
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
     }
   ],
   "rewrites": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
+    },
+    {
+      "source": "/",
+      "destination": "/api/page?path="
+    },
+    {
+      "source": "/:path*",
+      "destination": "/api/page?path=:path*"
     }
-  ]
+  ],
+  "functions": {
+    "api/page.js": {
+      "includeFiles": "{build/index.html,server/render.cjs}",
+      "maxDuration": 30
+    },
+    "api/sitemap.js": {
+      "includeFiles": "server/render.cjs",
+      "maxDuration": 30
+    },
+    "api/catalog.js": {
+      "includeFiles": "server/render.cjs",
+      "maxDuration": 30
+    }
+  }
 }

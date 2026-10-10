@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { ArrowUpRight } from 'lucide-react';
@@ -7,16 +7,7 @@ import './CSS/Products.css';
 
 const Products = () => {
     const { topicsData, subProductsMap } = useData();
-    const navigate = useNavigate();
     const revealRef = useScrollReveal();
-
-    const handleTopicClick = (topic) => {
-        if (topic.id === 1) {
-            navigate('/contact');
-        } else {
-            navigate(`/product/${topic.id}`);
-        }
-    };
 
     const getTopicImage = (topic) => {
         if (topic.image) return topic.image;
@@ -40,10 +31,11 @@ const Products = () => {
                     {topicsData.map((topic, index) => {
                         const thumbnailImg = getTopicImage(topic);
                         return (
-                            <div
+                            <Link
                                 key={topic.id}
                                 className={`category-card-premium reveal-hidden reveal-stagger-${(index % 3) + 1}`}
-                                onClick={() => handleTopicClick(topic)}
+                                to={topic.id === 1 ? '/contact' : `/product/${topic.id}`}
+                                style={{ color: 'inherit', textDecoration: 'none' }}
                             >
                                 <div className="card-media-wrap">
                                     {thumbnailImg ? (
@@ -51,9 +43,10 @@ const Products = () => {
                                             src={thumbnailImg}
                                             alt={topic.title}
                                             className="card-media-img"
+                                            loading="lazy" decoding="async"
                                             onError={(e) => {
                                                 e.target.onerror = null;
-                                                e.target.parentElement.innerHTML = `<div class="card-media-fallback">${topic.title[0]}</div>`;
+                                                e.target.src = '/images/product-unavailable.svg';
                                             }}
                                         />
                                     ) : (
@@ -74,7 +67,7 @@ const Products = () => {
                                         </span>
                                     </div>
                                 </div>
-                            </div>
+                            </Link>
                         );
                     })}
                 </div>

@@ -5,16 +5,22 @@ const CartContext = createContext();
 export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
-    const [cartItems, setCartItems] = useState(() => {
-        const localData = localStorage.getItem('cartItems');
-        return localData ? JSON.parse(localData) : [];
-    });
+    const [cartItems, setCartItems] = useState([]);
+    const [storageReady, setStorageReady] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [notification, setNotification] = useState(null);
 
     useEffect(() => {
-        localStorage.setItem('cartItems', JSON.stringify(cartItems));
-    }, [cartItems]);
+        try {
+            const saved = JSON.parse(localStorage.getItem('cartItems') || '[]');
+            if (Array.isArray(saved)) setCartItems(saved);
+        } catch { /* Corrupt or blocked storage must not break the storefront. */ }
+        setStorageReady(true);
+    }, []);
+    useEffect(() => {
+        if (!storageReady) return;
+        try { localStorage.setItem('cartItems', JSON.stringify(cartItems)); } catch { /* Storage may be blocked. */ }
+    }, [cartItems, storageReady]);
 
     const addToCart = (product) => {
         // Include customizationText and color in the unique key so same product with different options = separate item

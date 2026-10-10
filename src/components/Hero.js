@@ -15,8 +15,7 @@ const Hero = () => {
     useEffect(() => {
         const video = videoRef.current;
         if (video) {
-            video.src = videos[currentVideoIndex];
-            video.load();
+            video.play().catch(() => {});
         }
     }, [currentVideoIndex]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -38,6 +37,8 @@ const Hero = () => {
         <section id="home" className="hero">
             <video
                 ref={videoRef}
+                src={videos[currentVideoIndex]}
+                preload="metadata"
                 className="hero-video"
                 autoPlay
                 muted
@@ -58,15 +59,15 @@ const Hero = () => {
                 <div className="hero-content-centered">
                     <div className="hero-reveal-wrap">
                         <h1 className="hero-title-cinematic">
-                            Precision Meets<br />
+                            3D Printing Meets<br />
                             <span className="hero-title-gradient">Creativity.</span>
                         </h1>
                     </div>
 
                     <div className="hero-reveal-wrap">
                         <p className="hero-desc-refined">
-                            Crafting premium 3D-printed solutions for enthusiasts and professionals.
-                            From bespoke décor to industrial prototypes, we bring your most complex ideas to life.
+                            Custom 3D printing services in India for personalized gifts, décor and prototypes.
+                            Explore our collection or share your idea for a custom quote, delivered across India.
                         </p>
                     </div>
 
