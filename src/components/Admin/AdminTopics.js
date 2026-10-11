@@ -1,4 +1,6 @@
 import { adminFetch } from '../../adminApi';
+import { API_BASE } from '../../data/catalog';
+import { uploadImage } from '../../utils/cloudinary';
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import {
@@ -36,24 +38,13 @@ const AdminTopics = () => {
             return;
         }
 
-        const formData = new FormData();
-        formData.append('image', file);
-
         setUploading(true);
         try {
-            const response = await adminFetch('https://ayush1273.pythonanywhere.com/api/upload/', {
-                method: 'POST',
-                body: formData
-            });
-
-            const data = await response.json();
-            if (response.ok && data.success) {
-                setImage(data.url);
-            } else {
-                alert(data.error || 'Failed to upload image.');
-            }
+            const url = await uploadImage(file);
+            setImage(url);
         } catch (err) {
-            alert("Upload failed. Verify server connections.");
+            console.error("Upload error", err);
+            alert(err.message || "Upload failed. Verify server connections.");
         } finally {
             setUploading(false);
         }
@@ -102,14 +93,14 @@ const AdminTopics = () => {
             let response;
             if (editingTopic) {
                 // Update
-                response = await adminFetch(`https://ayush1273.pythonanywhere.com/api/topics/${editingTopic.id}/`, {
+                response = await adminFetch(`${API_BASE}/topics/${editingTopic.id}/`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
             } else {
                 // Create
-                response = await adminFetch('https://ayush1273.pythonanywhere.com/api/topics/', {
+                response = await adminFetch(`${API_BASE}/topics/`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -124,6 +115,7 @@ const AdminTopics = () => {
                 setError(data.detail || 'Failed to save category.');
             }
         } catch (err) {
+            console.error("Save error", err);
             setError('Network error. Failed to save.');
         } finally {
             setSaving(false);
@@ -138,7 +130,7 @@ const AdminTopics = () => {
 
         if (window.confirm(`Are you sure you want to delete category "${name}"? This will delete all products under it!`)) {
             try {
-                const response = await adminFetch(`https://ayush1273.pythonanywhere.com/api/topics/${id}/`, {
+                const response = await adminFetch(`${API_BASE}/topics/${id}/`, {
                     method: 'DELETE'
                 });
 
@@ -148,6 +140,7 @@ const AdminTopics = () => {
                     alert('Failed to delete category.');
                 }
             } catch (err) {
+                console.error("Delete error", err);
                 alert('Network error. Failed to delete.');
             }
         }

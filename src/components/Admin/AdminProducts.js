@@ -1,4 +1,6 @@
 import { adminFetch } from '../../adminApi';
+import { API_BASE } from '../../data/catalog';
+import { uploadImage } from '../../utils/cloudinary';
 import React, { useState, useMemo } from 'react';
 import { useData } from '../../context/DataContext';
 import {
@@ -178,24 +180,13 @@ const AdminProducts = () => {
             return;
         }
 
-        const formData = new FormData();
-        formData.append('image', file);
-
         setUploading(true);
         try {
-            const response = await adminFetch('https://ayush1273.pythonanywhere.com/api/upload/', {
-                method: 'POST',
-                body: formData
-            });
-
-            const data = await response.json();
-            if (response.ok && data.success) {
-                setImages([...images, data.url]);
-            } else {
-                alert(data.error || 'Failed to upload image.');
-            }
+            const url = await uploadImage(file);
+            setImages([...images, url]);
         } catch (err) {
-            alert("Upload failed. Verify server connections.");
+            console.error("Upload error", err);
+            alert(err.message || "Upload failed. Verify server connections.");
         } finally {
             setUploading(false);
         }
@@ -261,14 +252,14 @@ const AdminProducts = () => {
             let response;
             if (editingProduct && editingProduct.dbId) {
                 // Update
-                response = await adminFetch(`https://ayush1273.pythonanywhere.com/api/products/${editingProduct.dbId}/`, {
+                response = await adminFetch(`${API_BASE}/products/${editingProduct.dbId}/`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
             } else {
                 // Create
-                response = await adminFetch('https://ayush1273.pythonanywhere.com/api/products/', {
+                response = await adminFetch(`${API_BASE}/products/`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -283,6 +274,7 @@ const AdminProducts = () => {
                 setError(data.detail || JSON.stringify(data) || 'Failed to save product.');
             }
         } catch (err) {
+            console.error("Save product error", err);
             setError('Network error. Failed to save product.');
         } finally {
             setSaving(false);
@@ -297,7 +289,7 @@ const AdminProducts = () => {
 
         if (window.confirm(`Are you sure you want to delete product "${prodName}" (#${strId})?`)) {
             try {
-                const response = await adminFetch(`https://ayush1273.pythonanywhere.com/api/products/${dbId}/`, {
+                const response = await adminFetch(`${API_BASE}/products/${dbId}/`, {
                     method: 'DELETE'
                 });
 
@@ -307,6 +299,7 @@ const AdminProducts = () => {
                     alert('Failed to delete product.');
                 }
             } catch (err) {
+                console.error("Delete product error", err);
                 alert('Network error. Failed to delete product.');
             }
         }
@@ -707,23 +700,14 @@ const AdminProducts = () => {
                                                                             alert('File uploads are disabled in Offline Mode.');
                                                                             return;
                                                                         }
-                                                                        const formData = new FormData();
-                                                                        formData.append('image', file);
                                                                         try {
-                                                                            const res = await adminFetch('https://ayush1273.pythonanywhere.com/api/upload/', {
-                                                                                method: 'POST',
-                                                                                body: formData
-                                                                            });
-                                                                            const data = await res.json();
-                                                                            if (res.ok && data.success) {
-                                                                                const copy = [...colorOptions];
-                                                                                copy[optIdx].images = [...copy[optIdx].images, data.url];
-                                                                                setColorOptions(copy);
-                                                                            } else {
-                                                                                alert(data.error || 'Upload failed');
-                                                                            }
+                                                                            const url = await uploadImage(file);
+                                                                            const copy = [...colorOptions];
+                                                                            copy[optIdx].images = [...copy[optIdx].images, url];
+                                                                            setColorOptions(copy);
                                                                         } catch (err) {
-                                                                            alert('Upload failed');
+                                                                            console.error(err);
+                                                                            alert(err.message || 'Upload failed');
                                                                         }
                                                                     }}
                                                                 />

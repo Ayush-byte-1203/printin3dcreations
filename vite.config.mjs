@@ -1,6 +1,17 @@
 import { defineConfig } from 'vite';
 import { transform } from 'esbuild';
 export default defineConfig({
+    esbuild: {
+        loader: 'jsx',
+        include: /src\/.*\.jsx?$/,
+    },
+    optimizeDeps: {
+        esbuildOptions: {
+            loader: {
+                '.js': 'jsx',
+            },
+        },
+    },
     plugins: [{ name: 'existing-jsx-components', enforce: 'pre', async transform(code, id) {
         if (/\/src\/.*\.js$/.test(id)) return transform(code, { loader: 'jsx', jsx: 'automatic', sourcemap: false });
     } }],

@@ -5,6 +5,8 @@ __pycache__/
 
 # Environments
 .env
+.env.*
+!.env.example
 .venv
 env/
 venv/
@@ -17,7 +19,9 @@ venv.bak/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+*.sqlite3
 media/
+staticfiles/
 
 # Testing
 .pytest_cache/
