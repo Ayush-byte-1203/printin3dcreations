@@ -130,6 +130,7 @@ dist
 .Trashes
 Thumbs.db
 ehthumbs.db
+*.zip
 
 # IDEs
 .idea/

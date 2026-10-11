@@ -156,16 +156,27 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Cloudinary Integration
-import cloudinary
 CLOUDINARY_CLOUD_NAME = os.environ.get('CLOUDINARY_CLOUD_NAME', '')
 CLOUDINARY_API_KEY = os.environ.get('CLOUDINARY_API_KEY', '')
 CLOUDINARY_API_SECRET = os.environ.get('CLOUDINARY_API_SECRET', '')
 
-if CLOUDINARY_CLOUD_NAME:
-    cloudinary.config(
-        cloud_name=CLOUDINARY_CLOUD_NAME,
-        api_key=CLOUDINARY_API_KEY,
-        api_secret=CLOUDINARY_API_SECRET,
-        secure=True
-    )
+try:
+    import cloudinary
+    if CLOUDINARY_CLOUD_NAME:
+        proxy_url = os.environ.get('http_proxy') or os.environ.get('https_proxy')
+        if not proxy_url and ('pythonanywhere' in os.environ.get('PYTHONANYWHERE_DOMAIN', '') or os.path.exists('/home/ayush1273')):
+            proxy_url = 'http://proxy.server:3128'
+
+        config_kwargs = {
+            'cloud_name': CLOUDINARY_CLOUD_NAME,
+            'api_key': CLOUDINARY_API_KEY,
+            'api_secret': CLOUDINARY_API_SECRET,
+            'secure': True,
+        }
+        if proxy_url:
+            config_kwargs['api_proxy'] = proxy_url
+
+        cloudinary.config(**config_kwargs)
+except ImportError:
+    pass
 

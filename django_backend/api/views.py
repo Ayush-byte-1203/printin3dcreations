@@ -10,7 +10,10 @@ import uuid
 from rest_framework.permissions import BasePermission, SAFE_METHODS, AllowAny, IsAdminUser
 from rest_framework.authtoken.models import Token
 from django.conf import settings
-import cloudinary.uploader
+try:
+    import cloudinary.uploader
+except ImportError:
+    cloudinary = None
 
 from .models import Topic, Product
 from .serializers import TopicSerializer, ProductSerializer
