@@ -30,13 +30,18 @@ if not SECRET_KEY:
     else:
         raise ImproperlyConfigured('Set DJANGO_SECRET_KEY before starting the backend.')
 
-ALLOWED_HOSTS = ['ayush1273.pythonanywhere.com', 'www.printin3d.in', 'printin3d.in', 'localhost', '127.0.0.1']
+if not DEBUG and (len(SECRET_KEY) < 50 or SECRET_KEY.startswith('django-insecure-')):
+    raise ImproperlyConfigured('Use a strong private DJANGO_SECRET_KEY in production.')
+
+ALLOWED_HOSTS = ['ayush1273.pythonanywhere.com', 'www.printin3d.in', 'printin3d.in']
+if DEBUG:
+    ALLOWED_HOSTS += ['localhost', '127.0.0.1']
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+    'api.admin_config.SecureAdminConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -45,6 +50,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
+    'django_otp',
+    'django_otp.plugins.otp_totp',
     'api',
 ]
 
@@ -55,6 +62,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -99,6 +107,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {'min_length': 12},
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -128,7 +137,7 @@ STATIC_URL = 'static/'
 
 # CORS Configuration
 CORS_ALLOWED_ORIGINS = [
-    'https://www.printin3d.in', 'https://printin3d.in',
+    'https://www.printin3d.in',
 ]
 if DEBUG:
     CORS_ALLOWED_ORIGINS += ['http://localhost:3000', 'http://127.0.0.1:3000']
@@ -138,8 +147,11 @@ CSRF_COOKIE_SECURE = not DEBUG
 SECURE_CONTENT_TYPE_NOSNIFF = True
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': ['rest_framework.authentication.TokenAuthentication'],
+    'DEFAULT_AUTHENTICATION_CLASSES': ['api.security.ExpiringAdminTokenAuthentication'],
     'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAdminUser'],
+    'DEFAULT_RENDERER_CLASSES': ['rest_framework.renderers.JSONRenderer'],
+    'DEFAULT_THROTTLE_RATES': {'login_ip': '10/min', 'login_account': '5/min', 'admin_write': '60/min', 'upload': '10/min'},
+    'NUM_PROXIES': 1,
 }
 
 # Media Files (Uploaded images)
@@ -149,3 +161,29 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
+# Production settings must fail closed. Enrollment is required before activating MFA.
+REQUIRE_ADMIN_MFA = os.environ.get('DJANGO_REQUIRE_ADMIN_MFA', 'false' if DEBUG else 'true').lower() == 'true'
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Strict'
+CSRF_COOKIE_SAMESITE = 'Strict'
+SECURE_SSL_REDIRECT = not DEBUG
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+X_FRAME_OPTIONS = 'DENY'
+CORS_ALLOW_CREDENTIALS = False
+DATA_UPLOAD_MAX_MEMORY_SIZE = 3 * 1024 * 1024 + 16384
+FILE_UPLOAD_MAX_MEMORY_SIZE = 3 * 1024 * 1024
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    'django.contrib.auth.hashers.ScryptPasswordHasher',
+]
+# Shared by PythonAnywhere workers on this host. DRF throttles are best effort,
+# not an atomic distributed rate limiter; add edge enforcement for high-volume attacks.
+CACHES = {'default': {'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+                      'LOCATION': os.environ.get('DJANGO_CACHE_DIR', str(BASE_DIR / '.cache-security'))}}

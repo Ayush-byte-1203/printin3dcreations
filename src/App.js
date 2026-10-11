@@ -40,7 +40,7 @@ function AdminEntry({ unlock }) {
 }
 
 export function AppContent({ isCheckoutOpen, setIsCheckoutOpen }) {
-    const [adminEntryAllowed, setAdminEntryAllowed] = useState(false);
+    const [, setAdminEntryAllowed] = useState(false);
     const location = useLocation();
     const isAdmin = location.pathname.startsWith('/admin');
 
@@ -68,7 +68,7 @@ export function AppContent({ isCheckoutOpen, setIsCheckoutOpen }) {
 
                 {/* Velzon-themed Admin Control Studio Routes */}
                 <Route path="/696969" element={<AdminEntry unlock={setAdminEntryAllowed} />} />
-                <Route element={adminEntryAllowed ? <Outlet /> : <Navigate to="/" replace />}>
+                <Route element={<Outlet />}>
                     <Route path="/admin/login" element={<AdminLogin />} />
                     <Route path="/admin" element={<AdminLayout />}>
                         <Route index element={<AdminDashboard />} />

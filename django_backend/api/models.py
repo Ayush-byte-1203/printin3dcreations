@@ -29,3 +29,8 @@ class Product(models.Model):
 
     def __str__(self):
         return f"{self.topic.title}: {self.name}"
+
+
+class AdminSession(models.Model):
+    token = models.OneToOneField('authtoken.Token', on_delete=models.CASCADE, related_name='admin_session')
+    mfa_verified = models.BooleanField(default=False)

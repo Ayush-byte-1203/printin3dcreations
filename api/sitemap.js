@@ -3,6 +3,10 @@ const getCatalog = require('./_catalog');
 const escapeXml = value => value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
 
 module.exports = async function sitemap(req, res) {
+    if (req.method && !['GET', 'HEAD'].includes(req.method)) {
+        res.statusCode = 405; res.setHeader('Allow', 'GET, HEAD'); return res.end('Method not allowed');
+    }
+
     try {
         const catalog = await getCatalog();
         const paths = Object.keys(staticPages).filter(p => p !== '/search');

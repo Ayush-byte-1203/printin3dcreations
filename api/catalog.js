@@ -1,6 +1,10 @@
 const getCatalog = require('./_catalog');
 
 module.exports = async function catalog(req, res) {
+    if (req.method && !['GET', 'HEAD'].includes(req.method)) {
+        res.statusCode = 405; res.setHeader('Allow', 'GET, HEAD'); return res.end('Method not allowed');
+    }
+
     try {
         const data = await getCatalog();
         res.statusCode = 200;

@@ -1,0 +1,60 @@
+PrintIN3D security activation checklist
+
+Frontend on Vercel
+The gateway replaces browser-readable tokens with Secure HttpOnly SameSite=Strict
+cookies. Admin writes require an exact trusted Origin plus a CSRF token bound to
+an HttpOnly cookie. The browser contains no Django API token in JSON or storage.
+Legacy localStorage tokens are deleted on application startup.
+
+Do not treat frontend release as deployment of the PythonAnywhere backend.
+The PythonAnywhere application is a separate service and must be activated there.
+
+Backend deployment on PythonAnywhere
+1. Back up the current SQLite database and uploaded media. Record the deployed
+   Python version and dependency inventory. Do not run seed_data.py or replace
+   db.sqlite3. The new api migration adds AdminSession; catalog models are unchanged.
+2. Install the tested requirements in the backend virtual environment. The
+   patch targets Django 5.2 LTS and preserves existing PBKDF2 password verification
+   while preferring Argon2 for new hashes and successful-login upgrades.
+3. Set a fresh random DJANGO_SECRET_KEY through private hosting configuration.
+   Generate at least 50 characters. Do not reuse the historically published key
+   or retain it as SECRET_KEY_FALLBACKS. Rotate any related signing credentials.
+   Never store these values in Git, screenshots, shared documents or command logs.
+4. Keep DJANGO_DEBUG=false. Keep deployment in a short maintenance window during
+   installation and enrollment. Verify PythonAnywhere supplies a trustworthy
+   X-Forwarded-Proto header and configure NUM_PROXIES for its actual proxy chain.
+5. Run: python manage.py migrate
+   This creates OTP and AdminSession tables without replacing catalog data.
+6. Enroll every active staff user from a private interactive PythonAnywhere console:
+   python manage.py enroll_admin_mfa USERNAME
+   The private enrollment URI must be entered only into that user's authenticator.
+   Confirm enrollment using a current code. Never share the URI or OTP in chat.
+7. Set DJANGO_REQUIRE_ADMIN_MFA=true before reloading the production application.
+   Unenrolled staff cannot sign in. Prepare a controlled, documented recovery
+   process and another enrolled administrator before activation. Do not bypass MFA
+   as a permanent recovery mechanism.
+8. Run python manage.py check --deploy. Review expected HSTS preload/subdomain
+   warnings without enabling policies for domains you do not control.
+9. Reload the PythonAnywhere web application and verify login with MFA, denied
+   password-only and expired/legacy tokens, image decoding, CORS and logout.
+   Old tokens lacking AdminSession are rejected; successful login rotates tokens.
+10. Review active admin accounts and rotate any default, shared or previously
+    exposed passwords interactively using python manage.py changepassword USERNAME.
+    Account credentials and MFA enrollment require the account owner's participation.
+
+Rate limiting
+The gateway's in-memory limiter is per function instance. The backend's shared
+file cache supports multiple workers on one host, but DRF throttles are non-atomic.
+Add edge or atomic shared-store enforcement for strict distributed limits. Do not
+count the current proxy as global protection against direct backend requests.
+
+Other controls
+This application uses opaque DRF tokens, not JWT. No JWT signing secret is required.
+SQLite has no PostgreSQL RLS policy engine. The current catalog is public and staff
+can manage all catalog rows. Apply owner-scoped queries/object permissions and,
+when using PostgreSQL for private user records, appropriate RLS policies.
+No inbound webhook is implemented. Add timestamped signature verification and
+idempotent handling when a webhook or payment integration is introduced.
+Server fetches use fixed backend paths and reject redirects; do not accept caller
+provided upstream URLs. Browser image URLs are not server-side fetch destinations.
+Uploaded media must be served only as static data, never executed.

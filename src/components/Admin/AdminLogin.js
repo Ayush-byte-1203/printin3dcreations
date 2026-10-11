@@ -1,3 +1,4 @@
+import { adminLogin } from '../../adminApi';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
@@ -8,6 +9,8 @@ const AdminLogin = () => {
     const { isBackendOnline } = useData();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [otpCode, setOtpCode] = useState('');
+    const [needsMfa, setNeedsMfa] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -18,27 +21,19 @@ const AdminLogin = () => {
 
         try {
             if (isBackendOnline) {
-                // Connect to Django server
-                const response = await fetch('https://ayush1273.pythonanywhere.com/api/login/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                });
-
-                const data = await response.json();
+                const { response, data } = await adminLogin({ username, password, ...(otpCode ? { otp_code: otpCode } : {}) });
 
                 if (response.ok && data.success) {
-                    localStorage.setItem('admin_token', data.token);
-                    localStorage.setItem('admin_username', data.username);
                     navigate('/admin');
                 } else {
-                    setError(data.error || 'Invalid administrator credentials');
+                    if (data.code === 'mfa_required') setNeedsMfa(true);
+                    setError(data.code === 'mfa_required' ? 'Enter the code from your authenticator app.' : data.error || 'Invalid administrator credentials');
                 }
             } else {
                 setError('The backend is unavailable. Please try again later.');
             }
         } catch (err) {
-            console.error("Login request error", err);
+
             setError('Connection failed. Verify if Django backend is running.');
         } finally {
             setLoading(false);
@@ -78,6 +73,10 @@ const AdminLogin = () => {
                         />
                     </div>
 
+                    {needsMfa && <div className="login-form-group">
+                        <label htmlFor="otp-code">Authenticator code</label>
+                        <input id="otp-code" className="login-form-control" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} required value={otpCode} onChange={e => setOtpCode(e.target.value)} />
+                    </div>}
                     <button type="submit" disabled={loading} className="btn-admin-login">
                         {loading ? 'Authenticating...' : 'Sign In'}
                     </button>

@@ -195,7 +195,6 @@ const AdminProducts = () => {
                 alert(data.error || 'Failed to upload image.');
             }
         } catch (err) {
-            console.error("Upload error", err);
             alert("Upload failed. Verify server connections.");
         } finally {
             setUploading(false);
@@ -284,7 +283,6 @@ const AdminProducts = () => {
                 setError(data.detail || JSON.stringify(data) || 'Failed to save product.');
             }
         } catch (err) {
-            console.error("Save product error", err);
             setError('Network error. Failed to save product.');
         } finally {
             setSaving(false);
@@ -309,7 +307,6 @@ const AdminProducts = () => {
                     alert('Failed to delete product.');
                 }
             } catch (err) {
-                console.error("Delete product error", err);
                 alert('Network error. Failed to delete product.');
             }
         }
@@ -726,7 +723,6 @@ const AdminProducts = () => {
                                                                                 alert(data.error || 'Upload failed');
                                                                             }
                                                                         } catch (err) {
-                                                                            console.error(err);
                                                                             alert('Upload failed');
                                                                         }
                                                                     }}

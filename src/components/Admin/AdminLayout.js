@@ -1,3 +1,4 @@
+import { adminSession, adminLogout } from '../../adminApi';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
@@ -16,24 +17,25 @@ const AdminLayout = () => {
     const location = useLocation();
     const { isBackendOnline } = useData();
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [adminName, setAdminName] = useState('Administrator');
+    const [adminName] = useState('Administrator');
+    const [authenticated, setAuthenticated] = useState(false);
 
     useEffect(() => {
-        // Simple client-side route protection
-        const token = localStorage.getItem('admin_token');
-        const user = localStorage.getItem('admin_username');
-        if (!token) {
-            navigate('/admin/login');
-        } else if (user) {
-            setAdminName(user);
-        }
+        let active = true;
+        adminSession().then(session => {
+            if (!active) return;
+            if (session.authenticated) setAuthenticated(true);
+            else navigate('/admin/login', { replace: true });
+        }).catch(() => { if (active) navigate('/admin/login', { replace: true }); });
+        return () => { active = false; };
     }, [navigate]);
 
-    const handleLogout = () => {
-        localStorage.removeItem('admin_token');
-        localStorage.removeItem('admin_username');
-        navigate('/admin/login');
+    const handleLogout = async () => {
+        await adminLogout();
+        navigate('/admin/login', { replace: true });
     };
+
+    if (!authenticated) return <div role="status">Verifying session...</div>;
 
     const navItems = [
         { path: '/admin', label: 'Dashboard', icon: <LayoutDashboard size={18} />, exact: true },

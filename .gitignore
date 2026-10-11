@@ -144,3 +144,5 @@ staticfiles/
 
 # Generated server bundle
 /server/
+
+.cache-security/

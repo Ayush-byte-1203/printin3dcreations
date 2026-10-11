@@ -53,7 +53,6 @@ const AdminTopics = () => {
                 alert(data.error || 'Failed to upload image.');
             }
         } catch (err) {
-            console.error("Upload error", err);
             alert("Upload failed. Verify server connections.");
         } finally {
             setUploading(false);
@@ -125,7 +124,6 @@ const AdminTopics = () => {
                 setError(data.detail || 'Failed to save category.');
             }
         } catch (err) {
-            console.error("Save error", err);
             setError('Network error. Failed to save.');
         } finally {
             setSaving(false);
@@ -150,7 +148,6 @@ const AdminTopics = () => {
                     alert('Failed to delete category.');
                 }
             } catch (err) {
-                console.error("Delete error", err);
                 alert('Network error. Failed to delete.');
             }
         }

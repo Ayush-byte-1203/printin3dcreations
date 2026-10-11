@@ -5,6 +5,10 @@ const getCatalog = require('./_catalog');
 const template = fs.readFileSync(path.join(process.cwd(), 'build/index.html'), 'utf8');
 
 module.exports = async function page(req, res) {
+    if (req.method && !['GET', 'HEAD'].includes(req.method)) {
+        res.statusCode = 405; res.setHeader('Allow', 'GET, HEAD'); return res.end('Method not allowed');
+    }
+
     const requested = typeof req.query?.path === 'string' ? req.query.path : '';
     const pathname = '/' + requested.replace(/^\/+|\/+$/g, '');
     const query = new URLSearchParams();
