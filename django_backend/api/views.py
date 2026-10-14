@@ -25,22 +25,51 @@ class PublicReadAdminWrite(BasePermission):
         )
 
 
+from rest_framework.exceptions import ValidationError
+
 class TopicViewSet(viewsets.ModelViewSet):
     permission_classes = [PublicReadAdminWrite]
-    queryset = Topic.objects.all()
     serializer_class = TopicSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if user and user.is_authenticated and user.is_staff:
+            queryset = Topic.objects.all()
+            is_active_param = self.request.query_params.get('is_active')
+            if is_active_param is not None:
+                if is_active_param.lower() in ['true', '1']:
+                    queryset = queryset.filter(is_active=True)
+                elif is_active_param.lower() in ['false', '0']:
+                    queryset = queryset.filter(is_active=False)
+            return queryset
+        return Topic.objects.filter(is_active=True)
 
 class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = [PublicReadAdminWrite]
-    queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
     def get_queryset(self):
+        user = self.request.user
         queryset = Product.objects.all()
+
         topic_id = self.request.query_params.get('topic', None)
         if topic_id is not None:
-            queryset = queryset.filter(topic_id=topic_id)
-        return queryset
+            if not topic_id.isascii() or not topic_id.isdigit() or len(topic_id) > 10:
+                raise ValidationError({'topic': 'Use a numeric category ID.'})
+            queryset = queryset.filter(topic_id=int(topic_id))
+
+        if user and user.is_authenticated and user.is_staff:
+            is_active_param = self.request.query_params.get('is_active')
+            if is_active_param is not None:
+                if is_active_param.lower() in ['true', '1']:
+                    queryset = queryset.filter(is_active=True)
+                elif is_active_param.lower() in ['false', '0']:
+                    queryset = queryset.filter(is_active=False)
+            return queryset
+
+        # For public visitors / storefront:
+        # A product is visible ONLY if the product is active AND its category is active
+        return queryset.filter(is_active=True, topic__is_active=True)
 
 class SiteSettingViewSet(viewsets.ModelViewSet):
     permission_classes = [PublicReadAdminWrite]
