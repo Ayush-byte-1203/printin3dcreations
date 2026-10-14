@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useData } from '../context/DataContext';
 import { ShoppingCart, Menu, X } from 'lucide-react';
+import AnnouncementMarquee from './AnnouncementMarquee';
 import './CSS/Navbar.css';
 
 const Navbar = ({ setIsCartOpen }) => {
     const { getCartCount, toggleCart } = useCart();
+    const { siteSettings } = useData() || {};
     const [scrolled, setScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -79,96 +82,105 @@ const Navbar = ({ setIsCartOpen }) => {
         }
     };
 
+    const isScrolledMode = scrolled || isMobileMenuOpen || location.pathname !== '/';
+    const headerStyle = (isScrolledMode && siteSettings) ? {
+        backgroundColor: siteSettings.header_bg_color || undefined,
+        '--navbar-text-color': siteSettings.header_text_color || undefined
+    } : {};
+
     return (
-        <nav className={`navbar ${(scrolled || isMobileMenuOpen || location.pathname !== '/') ? 'navbar-scrolled' : ''}`}>
-            <div className="nav-inner">
-                {/* Mobile Menu Toggle */}
-                <button
-                    className="nav-icon-btn mobile-menu-btn"
-                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                    aria-label={isMobileMenuOpen ? "Close Menu" : "Open Menu"}
-                >
-                    {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                </button>
+        <header className="site-header-wrapper">
+            <nav className={`navbar ${isScrolledMode ? 'navbar-scrolled' : ''}`} style={headerStyle}>
+                <div className="nav-inner">
+                    {/* Mobile Menu Toggle */}
+                    <button
+                        className="nav-icon-btn mobile-menu-btn"
+                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                        aria-label={isMobileMenuOpen ? "Close Menu" : "Open Menu"}
+                    >
+                        {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                    </button>
 
-                {/* Left Logo */}
-                <Link to="/" className="logo" onClick={scrollToTop}>
-                    <span className="logo-text">Print-IN 3D</span>
-                </Link>
+                    {/* Left Logo */}
+                    <Link to="/" className="logo" onClick={scrollToTop}>
+                        <span className="logo-text">Print-IN 3D</span>
+                    </Link>
 
-                {/* Right Content */}
-                <div className="nav-right">
-                    {/* Desktop Navigation */}
-                    <div className="nav-links desktop-only">
-                        <Link to="/#products" className="nav-link" onClick={(e) => handleHashLink(e, 'products')}>Shop</Link>
-                        <Link to="/about" className="nav-link">About</Link>
-                        <Link to="/contact" className="nav-link">Contact</Link>
-                    </div>
+                    {/* Right Content */}
+                    <div className="nav-right">
+                        {/* Desktop Navigation */}
+                        <div className="nav-links desktop-only">
+                            <Link to="/#products" className="nav-link" onClick={(e) => handleHashLink(e, 'products')}>Shop</Link>
+                            <Link to="/about" className="nav-link">About</Link>
+                            <Link to="/contact" className="nav-link">Contact</Link>
+                        </div>
 
-                    <div className="nav-icons" style={{ display: 'flex', gap: '8px' }}>
+                        <div className="nav-icons" style={{ display: 'flex', gap: '8px' }}>
 
-                        <button className="nav-icon-btn cart-btn" onClick={handleCartOpen} aria-label="View Cart">
-                            <ShoppingCart size={20} />
-                            {getCartCount() > 0 && (
-                                <span className="cart-badge">{getCartCount()}</span>
-                            )}
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {/* Desktop Search Dropdown */}
-            <div className={`search-dropdown desktop-only ${isSearchOpen ? 'open' : ''}`}>
-                <div className="search-container-inner">
-                    <form className="search-form" action="/search">
-
-                        <input
-                            type="text"
-                            name="q"
-                            placeholder="Search products, materials..."
-                            className="search-input"
-                            autoFocus={isSearchOpen}
-                        />
-                        <button type="button" className="search-close" onClick={() => setIsSearchOpen(false)}>
-                            <X size={18} />
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            {/* Premium Fullscreen Mobile Menu */}
-            <div
-                className={`mobile-menu-backdrop ${isMobileMenuOpen ? 'open' : ''}`}
-                onClick={() => setIsMobileMenuOpen(false)}
-            ></div>
-            <div className={`mobile-menu-overlay ${isMobileMenuOpen ? 'open' : ''}`}>
-                <div className="mobile-menu-content">
-                    <form className="mobile-search-form" action="/search">
-
-                        <input
-                            type="text"
-                            name="q"
-                            placeholder="Search store..."
-                            className="search-input"
-                        />
-                    </form>
-
-                    <div className="mobile-nav-links">
-                        <Link to="/" className="mobile-nav-link">Home</Link>
-                        <Link to="/#products" className="mobile-nav-link" onClick={(e) => handleHashLink(e, 'products')}>Shop Catalog</Link>
-                        <Link to="/about" className="mobile-nav-link">About Us</Link>
-                        <Link to="/contact" className="mobile-nav-link">Contact & Support</Link>
-                        <Link to="/faq" className="mobile-nav-link">FAQ & Shipping</Link>
-                    </div>
-
-                    <div className="mobile-menu-footer">
-                        <a href="#!" onClick={(e) => { e.preventDefault(); window.open('https://wa.me/917043591952', '_blank'); }} className="btn-premium btn-primary-p" style={{ width: '100%', justifyContent: 'center' }}>
-                            WhatsApp Support
-                        </a>
+                            <button className="nav-icon-btn cart-btn" onClick={handleCartOpen} aria-label="View Cart">
+                                <ShoppingCart size={20} />
+                                {getCartCount() > 0 && (
+                                    <span className="cart-badge">{getCartCount()}</span>
+                                )}
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </nav>
+
+                {/* Desktop Search Dropdown */}
+                <div className={`search-dropdown desktop-only ${isSearchOpen ? 'open' : ''}`}>
+                    <div className="search-container-inner">
+                        <form className="search-form" action="/search">
+
+                            <input
+                                type="text"
+                                name="q"
+                                placeholder="Search products, materials..."
+                                className="search-input"
+                                autoFocus={isSearchOpen}
+                            />
+                            <button type="button" className="search-close" onClick={() => setIsSearchOpen(false)}>
+                                <X size={18} />
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                {/* Premium Fullscreen Mobile Menu */}
+                <div
+                    className={`mobile-menu-backdrop ${isMobileMenuOpen ? 'open' : ''}`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                ></div>
+                <div className={`mobile-menu-overlay ${isMobileMenuOpen ? 'open' : ''}`}>
+                    <div className="mobile-menu-content">
+                        <form className="mobile-search-form" action="/search">
+
+                            <input
+                                type="text"
+                                name="q"
+                                placeholder="Search store..."
+                                className="search-input"
+                            />
+                        </form>
+
+                        <div className="mobile-nav-links">
+                            <Link to="/" className="mobile-nav-link">Home</Link>
+                            <Link to="/#products" className="mobile-nav-link" onClick={(e) => handleHashLink(e, 'products')}>Shop Catalog</Link>
+                            <Link to="/about" className="mobile-nav-link">About Us</Link>
+                            <Link to="/contact" className="mobile-nav-link">Contact & Support</Link>
+                            <Link to="/faq" className="mobile-nav-link">FAQ & Shipping</Link>
+                        </div>
+
+                        <div className="mobile-menu-footer">
+                            <a href="#!" onClick={(e) => { e.preventDefault(); window.open('https://wa.me/917043591952', '_blank'); }} className="btn-premium btn-primary-p" style={{ width: '100%', justifyContent: 'center' }}>
+                                WhatsApp Support
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            <AnnouncementMarquee />
+        </header>
     );
 };
 

@@ -1,10 +1,11 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import TopicViewSet, ProductViewSet, AdminLoginView, AdminLogoutView, ImageUploadView
+from .views import TopicViewSet, ProductViewSet, SiteSettingViewSet, AdminLoginView, AdminLogoutView, ImageUploadView
 
 router = DefaultRouter()
 router.register(r'topics', TopicViewSet, basename='topic')
 router.register(r'products', ProductViewSet, basename='product')
+router.register(r'settings', SiteSettingViewSet, basename='settings')
 
 urlpatterns = [
     path('login/', AdminLoginView.as_view(), name='admin_login'),

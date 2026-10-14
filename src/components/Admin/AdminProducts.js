@@ -1,4 +1,6 @@
 import { adminFetch } from '../../adminApi';
+import { API_BASE } from '../../data/catalog';
+import { uploadImage } from '../../utils/cloudinary';
 import React, { useState, useMemo } from 'react';
 import { useData } from '../../context/DataContext';
 import {
@@ -7,7 +9,8 @@ import {
     Trash2,
     X,
     Upload,
-    Search
+    Search,
+    Star
 } from 'lucide-react';
 import '../CSS/Admin.css';
 
@@ -41,6 +44,8 @@ const AdminProducts = () => {
     const [error, setError] = useState('');
     const [saving, setSaving] = useState(false);
     const [uploading, setUploading] = useState(false);
+    const [isBestseller, setIsBestseller] = useState(false);
+    const [togglingBestsellerId, setTogglingBestsellerId] = useState(null);
 
     // Flat list of products for the table
     const productsList = useMemo(() => {
@@ -61,7 +66,11 @@ const AdminProducts = () => {
     // Filtering & Searching
     const filteredProducts = useMemo(() => {
         return productsList.filter(p => {
-            const matchesTopic = selectedTopicId === 'all' || p.categoryId === Number(selectedTopicId);
+            const matchesTopic = selectedTopicId === 'all'
+                ? true
+                : selectedTopicId === 'bestsellers'
+                    ? !!p.isBestseller
+                    : p.categoryId === Number(selectedTopicId);
             const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 p.desc.toLowerCase().includes(searchTerm.toLowerCase());
             return matchesTopic && matchesSearch;
@@ -84,6 +93,7 @@ const AdminProducts = () => {
         setCustomizationLabel('');
         setCustomizationPlaceholder('');
         setCustomLettersLimit(50);
+        setIsBestseller(false);
         setError('');
         setModalOpen(true);
     };
@@ -114,6 +124,7 @@ const AdminProducts = () => {
         setCustomizationLabel(p.customizationLabel || '');
         setCustomizationPlaceholder(p.customizationPlaceholder || '');
         setCustomLettersLimit(p.customLettersLimit || 50);
+        setIsBestseller(!!p.isBestseller);
         setError('');
         setModalOpen(true);
     };
@@ -178,24 +189,13 @@ const AdminProducts = () => {
             return;
         }
 
-        const formData = new FormData();
-        formData.append('image', file);
-
         setUploading(true);
         try {
-            const response = await adminFetch('https://ayush1273.pythonanywhere.com/api/upload/', {
-                method: 'POST',
-                body: formData
-            });
-
-            const data = await response.json();
-            if (response.ok && data.success) {
-                setImages([...images, data.url]);
-            } else {
-                alert(data.error || 'Failed to upload image.');
-            }
+            const url = await uploadImage(file);
+            setImages([...images, url]);
         } catch (err) {
-            alert("Upload failed. Verify server connections.");
+            console.error("Upload error", err);
+            alert(err.message || "Upload failed. Verify server connections.");
         } finally {
             setUploading(false);
         }
@@ -254,21 +254,22 @@ const AdminProducts = () => {
             customizable: customizable,
             customization_label: customizationLabel,
             customization_placeholder: customizationPlaceholder,
-            custom_letters_limit: Number(customLettersLimit)
+            custom_letters_limit: Number(customLettersLimit),
+            is_bestseller: isBestseller
         };
 
         try {
             let response;
             if (editingProduct && editingProduct.dbId) {
                 // Update
-                response = await adminFetch(`https://ayush1273.pythonanywhere.com/api/products/${editingProduct.dbId}/`, {
+                response = await adminFetch(`${API_BASE}/products/${editingProduct.dbId}/`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
             } else {
                 // Create
-                response = await adminFetch('https://ayush1273.pythonanywhere.com/api/products/', {
+                response = await adminFetch(`${API_BASE}/products/`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -283,6 +284,7 @@ const AdminProducts = () => {
                 setError(data.detail || JSON.stringify(data) || 'Failed to save product.');
             }
         } catch (err) {
+            console.error("Save product error", err);
             setError('Network error. Failed to save product.');
         } finally {
             setSaving(false);
@@ -297,7 +299,7 @@ const AdminProducts = () => {
 
         if (window.confirm(`Are you sure you want to delete product "${prodName}" (#${strId})?`)) {
             try {
-                const response = await adminFetch(`https://ayush1273.pythonanywhere.com/api/products/${dbId}/`, {
+                const response = await adminFetch(`${API_BASE}/products/${dbId}/`, {
                     method: 'DELETE'
                 });
 
@@ -307,8 +309,37 @@ const AdminProducts = () => {
                     alert('Failed to delete product.');
                 }
             } catch (err) {
+                console.error("Delete product error", err);
                 alert('Network error. Failed to delete product.');
             }
+        }
+    };
+
+    const handleToggleBestseller = async (p) => {
+        if (!isBackendOnline) {
+            alert('Modifications are disabled in offline mode.');
+            return;
+        }
+        const newStatus = !p.isBestseller;
+        setTogglingBestsellerId(p.id);
+        try {
+            const response = await adminFetch(`${API_BASE}/products/${p.dbId}/`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ is_bestseller: newStatus })
+            });
+
+            if (response.ok) {
+                await refreshData();
+            } else {
+                const data = await response.json().catch(() => ({}));
+                alert(data.detail || JSON.stringify(data) || 'Failed to update bestseller status.');
+            }
+        } catch (err) {
+            console.error("Toggle bestseller error", err);
+            alert('Network error. Failed to update bestseller status.');
+        } finally {
+            setTogglingBestsellerId(null);
         }
     };
 
@@ -340,6 +371,7 @@ const AdminProducts = () => {
                             onChange={(e) => setSelectedTopicId(e.target.value)}
                         >
                             <option value="all">All Categories</option>
+                            <option value="bestsellers">⭐ Bestsellers Only</option>
                             {topicsData.map(t => (
                                 <option key={t.id} value={t.id}>{t.title}</option>
                             ))}
@@ -367,6 +399,7 @@ const AdminProducts = () => {
                                 <th>Product Name</th>
                                 <th>Category</th>
                                 <th>Price</th>
+                                <th style={{ textAlign: 'center' }}>Bestseller</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -390,6 +423,32 @@ const AdminProducts = () => {
                                         <span className="badge-status active" style={{ background: '#EFF6FF', color: '#1E40AF' }}>{p.categoryName}</span>
                                     </td>
                                     <td style={{ fontWeight: 800 }}>₹{p.price === 0 ? 'Quote' : p.price}</td>
+                                    <td style={{ textAlign: 'center' }}>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleToggleBestseller(p)}
+                                            disabled={togglingBestsellerId === p.id}
+                                            title={p.isBestseller ? "Click to remove from Bestsellers" : "Click to mark as Bestseller"}
+                                            style={{
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                gap: '6px',
+                                                padding: '5px 12px',
+                                                borderRadius: '20px',
+                                                border: p.isBestseller ? '1px solid #F59E0B' : '1px solid var(--admin-border)',
+                                                background: p.isBestseller ? '#FEF3C7' : '#F8FAFC',
+                                                color: p.isBestseller ? '#B45309' : 'var(--admin-text-muted)',
+                                                cursor: togglingBestsellerId === p.id ? 'wait' : 'pointer',
+                                                fontSize: '0.75rem',
+                                                fontWeight: 700,
+                                                opacity: togglingBestsellerId === p.id ? 0.6 : 1,
+                                                transition: 'all 0.2s ease'
+                                            }}
+                                        >
+                                            <Star size={14} fill={p.isBestseller ? "#F59E0B" : "none"} color={p.isBestseller ? "#D97706" : "currentColor"} />
+                                            {p.isBestseller ? 'Bestseller' : 'Standard'}
+                                        </button>
+                                    </td>
                                     <td>
                                         <div className="table-actions">
                                             <button onClick={() => openEditModal(p)} className="btn-table-action edit" title="Edit">
@@ -549,6 +608,29 @@ const AdminProducts = () => {
                                             />
                                         </div>
                                     </div>
+                                    {/* Bestseller Toggle */}
+                                    <div className="admin-form-group" style={{
+                                        marginBottom: '20px',
+                                        padding: '12px 14px',
+                                        background: isBestseller ? '#FEF3C7' : '#F8FAFC',
+                                        border: isBestseller ? '1px solid #FCD34D' : '1px solid var(--admin-border)',
+                                        borderRadius: '6px',
+                                        transition: 'all 0.2s ease'
+                                    }}>
+                                        <label className="admin-checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontWeight: 600, color: isBestseller ? '#92400E' : 'inherit' }}>
+                                            <input
+                                                type="checkbox"
+                                                checked={isBestseller}
+                                                onChange={(e) => setIsBestseller(e.target.checked)}
+                                                style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#D97706' }}
+                                            />
+                                            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                <Star size={16} fill={isBestseller ? "#F59E0B" : "none"} color={isBestseller ? "#D97706" : "currentColor"} />
+                                                Feature as Bestseller (Display on Homepage "Our Bestsellers")
+                                            </span>
+                                        </label>
+                                    </div>
+
                                     {/* Personalization Options Toggle */}
                                     <div className="admin-form-group" style={{ marginBottom: '20px' }}>
                                         <label className="admin-checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600 }}>
@@ -707,23 +789,14 @@ const AdminProducts = () => {
                                                                             alert('File uploads are disabled in Offline Mode.');
                                                                             return;
                                                                         }
-                                                                        const formData = new FormData();
-                                                                        formData.append('image', file);
                                                                         try {
-                                                                            const res = await adminFetch('https://ayush1273.pythonanywhere.com/api/upload/', {
-                                                                                method: 'POST',
-                                                                                body: formData
-                                                                            });
-                                                                            const data = await res.json();
-                                                                            if (res.ok && data.success) {
-                                                                                const copy = [...colorOptions];
-                                                                                copy[optIdx].images = [...copy[optIdx].images, data.url];
-                                                                                setColorOptions(copy);
-                                                                            } else {
-                                                                                alert(data.error || 'Upload failed');
-                                                                            }
+                                                                            const url = await uploadImage(file);
+                                                                            const copy = [...colorOptions];
+                                                                            copy[optIdx].images = [...copy[optIdx].images, url];
+                                                                            setColorOptions(copy);
                                                                         } catch (err) {
-                                                                            alert('Upload failed');
+                                                                            console.error(err);
+                                                                            alert(err.message || 'Upload failed');
                                                                         }
                                                                     }}
                                                                 />

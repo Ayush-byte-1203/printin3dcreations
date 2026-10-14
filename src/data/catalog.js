@@ -1,4 +1,7 @@
-export const API_BASE = 'https://ayush1273.pythonanywhere.com/api';
+export const API_BASE = (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_BASE) ||
+    (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? 'http://127.0.0.1:8000/api'
+        : 'https://ayush1273.pythonanywhere.com/api');
 export const SITE_URL = 'https://www.printin3d.in';
 
 export const slugify = (text = '') => String(text).toLowerCase().trim()
@@ -20,7 +23,9 @@ export function normalizeCatalog(topics, products) {
             fullDetails: p.full_details || '', specs: p.specs || {}, features: p.features || [],
             customizable: !!p.customizable, customizationLabel: p.customization_label || '',
             customizationPlaceholder: p.customization_placeholder || '', customLettersLimit: p.custom_letters_limit || 50,
-            hasColors: !!p.has_colors, colorOptions: p.color_options || []
+            hasColors: !!p.has_colors, colorOptions: p.color_options || [],
+            isBestseller: !!p.is_bestseller,
+            rawHasBestseller: p.is_bestseller !== undefined
         });
     });
     return { topicsData, subProductsMap };

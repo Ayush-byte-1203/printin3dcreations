@@ -6,6 +6,7 @@ import {
     LayoutDashboard, 
     FolderKanban, 
     ShoppingBag, 
+    Sliders,
     LogOut,
     Menu,
     Activity
@@ -41,6 +42,7 @@ const AdminLayout = () => {
         { path: '/admin', label: 'Dashboard', icon: <LayoutDashboard size={18} />, exact: true },
         { path: '/admin/categories', label: 'Categories', icon: <FolderKanban size={18} /> },
         { path: '/admin/products', label: 'Products', icon: <ShoppingBag size={18} /> },
+        { path: '/admin/hero-settings', label: 'Hero & Marquee', icon: <Sliders size={18} /> },
     ];
 
     const isTabActive = (item) => {

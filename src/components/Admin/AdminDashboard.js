@@ -100,6 +100,9 @@ const AdminDashboard = () => {
                     <button onClick={() => navigate('/admin/products')} className="admin-btn-action" style={{ padding: '12px 24px' }}>
                         Add/Edit Products <ArrowRight size={16} />
                     </button>
+                    <button onClick={() => navigate('/admin/hero-settings')} className="admin-btn-secondary" style={{ padding: '12px 24px', background: '#EEF2FF', color: '#4F46E5', borderColor: '#C7D2FE' }}>
+                        Hero & Marquee Settings <ArrowRight size={16} />
+                    </button>
                     <button onClick={() => navigate('/')} className="admin-btn-secondary" style={{ padding: '12px 24px', background: '#F8FAFC' }}>
                         View Live Website <ArrowRight size={16} />
                     </button>

@@ -343,7 +343,8 @@ for topic_id, products in sub_products.items():
             customizable=prod.get("customizable", False),
             customization_label=prod.get("customizationLabel", ""),
             customization_placeholder=prod.get("customizationPlaceholder", ""),
-            custom_letters_limit=prod.get("customLettersLimit", 50)
+            custom_letters_limit=prod.get("customLettersLimit", 50),
+            is_bestseller=prod.get("isBestseller", False)
         )
         print(f"Created Product: {prod['name']} under {topic.title}")
 

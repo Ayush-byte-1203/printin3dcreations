@@ -1,7 +1,7 @@
-import { adminLogin } from '../../adminApi';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
+import { adminLogin } from '../../adminApi';
 import '../CSS/Admin.css';
 
 const AdminLogin = () => {
@@ -21,20 +21,26 @@ const AdminLogin = () => {
 
         try {
             if (isBackendOnline) {
-                const { response, data } = await adminLogin({ username, password, ...(otpCode ? { otp_code: otpCode } : {}) });
+                const { response, data } = await adminLogin({
+                    username,
+                    password,
+                    ...(otpCode ? { otp_code: otpCode } : {})
+                });
 
                 if (response.ok && data.success) {
                     navigate('/admin');
                 } else {
                     if (data.code === 'mfa_required') setNeedsMfa(true);
-                    setError(data.code === 'mfa_required' ? 'Enter the code from your authenticator app.' : data.error || 'Invalid administrator credentials');
+                    setError(data.code === 'mfa_required'
+                        ? 'Enter the code from your authenticator app.'
+                        : data.error || 'Invalid administrator credentials');
                 }
             } else {
                 setError('The backend is unavailable. Please try again later.');
             }
         } catch (err) {
-
-            setError('Connection failed. Verify if Django backend is running.');
+            console.error("Login request error", err);
+            setError(err.message || 'Connection failed. Verify if Django backend is running.');
         } finally {
             setLoading(false);
         }
@@ -73,10 +79,23 @@ const AdminLogin = () => {
                         />
                     </div>
 
-                    {needsMfa && <div className="login-form-group">
-                        <label htmlFor="otp-code">Authenticator code</label>
-                        <input id="otp-code" className="login-form-control" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} required value={otpCode} onChange={e => setOtpCode(e.target.value)} />
-                    </div>}
+                    {needsMfa && (
+                        <div className="login-form-group">
+                            <label htmlFor="otp-code">Authenticator code</label>
+                            <input
+                                id="otp-code"
+                                className="login-form-control"
+                                inputMode="numeric"
+                                autoComplete="one-time-code"
+                                pattern="[0-9]{6}"
+                                maxLength={6}
+                                required
+                                value={otpCode}
+                                onChange={e => setOtpCode(e.target.value)}
+                            />
+                        </div>
+                    )}
+
                     <button type="submit" disabled={loading} className="btn-admin-login">
                         {loading ? 'Authenticating...' : 'Sign In'}
                     </button>
