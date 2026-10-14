@@ -1,8 +1,8 @@
 import { API_BASE } from '../data/catalog';
 import { adminFetch } from '../adminApi';
 
-export const CLOUDINARY_CLOUD_NAME = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME || 'p8hyihu9';
-export const CLOUDINARY_UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_PRESET || 'printin3d_unsigned';
+export const CLOUDINARY_CLOUD_NAME = (typeof process !== 'undefined' && process.env && process.env.REACT_APP_CLOUDINARY_CLOUD_NAME) || 'p8hyihu9';
+export const CLOUDINARY_UPLOAD_PRESET = (typeof process !== 'undefined' && process.env && process.env.REACT_APP_CLOUDINARY_PRESET) || 'printin3d_unsigned';
 
 /**
  * Uploads an image file with dual reliability:

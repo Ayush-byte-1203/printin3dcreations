@@ -9,7 +9,8 @@ import {
     Trash2,
     X,
     Upload,
-    Search
+    Search,
+    Star
 } from 'lucide-react';
 import '../CSS/Admin.css';
 
@@ -43,6 +44,8 @@ const AdminProducts = () => {
     const [error, setError] = useState('');
     const [saving, setSaving] = useState(false);
     const [uploading, setUploading] = useState(false);
+    const [isBestseller, setIsBestseller] = useState(false);
+    const [togglingBestsellerId, setTogglingBestsellerId] = useState(null);
 
     // Flat list of products for the table
     const productsList = useMemo(() => {
@@ -63,7 +66,11 @@ const AdminProducts = () => {
     // Filtering & Searching
     const filteredProducts = useMemo(() => {
         return productsList.filter(p => {
-            const matchesTopic = selectedTopicId === 'all' || p.categoryId === Number(selectedTopicId);
+            const matchesTopic = selectedTopicId === 'all'
+                ? true
+                : selectedTopicId === 'bestsellers'
+                    ? !!p.isBestseller
+                    : p.categoryId === Number(selectedTopicId);
             const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 p.desc.toLowerCase().includes(searchTerm.toLowerCase());
             return matchesTopic && matchesSearch;
@@ -86,6 +93,7 @@ const AdminProducts = () => {
         setCustomizationLabel('');
         setCustomizationPlaceholder('');
         setCustomLettersLimit(50);
+        setIsBestseller(false);
         setError('');
         setModalOpen(true);
     };
@@ -116,6 +124,7 @@ const AdminProducts = () => {
         setCustomizationLabel(p.customizationLabel || '');
         setCustomizationPlaceholder(p.customizationPlaceholder || '');
         setCustomLettersLimit(p.customLettersLimit || 50);
+        setIsBestseller(!!p.isBestseller);
         setError('');
         setModalOpen(true);
     };
@@ -245,7 +254,8 @@ const AdminProducts = () => {
             customizable: customizable,
             customization_label: customizationLabel,
             customization_placeholder: customizationPlaceholder,
-            custom_letters_limit: Number(customLettersLimit)
+            custom_letters_limit: Number(customLettersLimit),
+            is_bestseller: isBestseller
         };
 
         try {
@@ -305,6 +315,34 @@ const AdminProducts = () => {
         }
     };
 
+    const handleToggleBestseller = async (p) => {
+        if (!isBackendOnline) {
+            alert('Modifications are disabled in offline mode.');
+            return;
+        }
+        const newStatus = !p.isBestseller;
+        setTogglingBestsellerId(p.id);
+        try {
+            const response = await adminFetch(`${API_BASE}/products/${p.dbId}/`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ is_bestseller: newStatus })
+            });
+
+            if (response.ok) {
+                await refreshData();
+            } else {
+                const data = await response.json().catch(() => ({}));
+                alert(data.detail || JSON.stringify(data) || 'Failed to update bestseller status.');
+            }
+        } catch (err) {
+            console.error("Toggle bestseller error", err);
+            alert('Network error. Failed to update bestseller status.');
+        } finally {
+            setTogglingBestsellerId(null);
+        }
+    };
+
     return (
         <div style={{ animation: 'modalSlideUp 0.4s ease' }}>
             {/* Header controls filter */}
@@ -333,6 +371,7 @@ const AdminProducts = () => {
                             onChange={(e) => setSelectedTopicId(e.target.value)}
                         >
                             <option value="all">All Categories</option>
+                            <option value="bestsellers">⭐ Bestsellers Only</option>
                             {topicsData.map(t => (
                                 <option key={t.id} value={t.id}>{t.title}</option>
                             ))}
@@ -360,6 +399,7 @@ const AdminProducts = () => {
                                 <th>Product Name</th>
                                 <th>Category</th>
                                 <th>Price</th>
+                                <th style={{ textAlign: 'center' }}>Bestseller</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -383,6 +423,32 @@ const AdminProducts = () => {
                                         <span className="badge-status active" style={{ background: '#EFF6FF', color: '#1E40AF' }}>{p.categoryName}</span>
                                     </td>
                                     <td style={{ fontWeight: 800 }}>₹{p.price === 0 ? 'Quote' : p.price}</td>
+                                    <td style={{ textAlign: 'center' }}>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleToggleBestseller(p)}
+                                            disabled={togglingBestsellerId === p.id}
+                                            title={p.isBestseller ? "Click to remove from Bestsellers" : "Click to mark as Bestseller"}
+                                            style={{
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                gap: '6px',
+                                                padding: '5px 12px',
+                                                borderRadius: '20px',
+                                                border: p.isBestseller ? '1px solid #F59E0B' : '1px solid var(--admin-border)',
+                                                background: p.isBestseller ? '#FEF3C7' : '#F8FAFC',
+                                                color: p.isBestseller ? '#B45309' : 'var(--admin-text-muted)',
+                                                cursor: togglingBestsellerId === p.id ? 'wait' : 'pointer',
+                                                fontSize: '0.75rem',
+                                                fontWeight: 700,
+                                                opacity: togglingBestsellerId === p.id ? 0.6 : 1,
+                                                transition: 'all 0.2s ease'
+                                            }}
+                                        >
+                                            <Star size={14} fill={p.isBestseller ? "#F59E0B" : "none"} color={p.isBestseller ? "#D97706" : "currentColor"} />
+                                            {p.isBestseller ? 'Bestseller' : 'Standard'}
+                                        </button>
+                                    </td>
                                     <td>
                                         <div className="table-actions">
                                             <button onClick={() => openEditModal(p)} className="btn-table-action edit" title="Edit">
@@ -542,6 +608,29 @@ const AdminProducts = () => {
                                             />
                                         </div>
                                     </div>
+                                    {/* Bestseller Toggle */}
+                                    <div className="admin-form-group" style={{
+                                        marginBottom: '20px',
+                                        padding: '12px 14px',
+                                        background: isBestseller ? '#FEF3C7' : '#F8FAFC',
+                                        border: isBestseller ? '1px solid #FCD34D' : '1px solid var(--admin-border)',
+                                        borderRadius: '6px',
+                                        transition: 'all 0.2s ease'
+                                    }}>
+                                        <label className="admin-checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontWeight: 600, color: isBestseller ? '#92400E' : 'inherit' }}>
+                                            <input
+                                                type="checkbox"
+                                                checked={isBestseller}
+                                                onChange={(e) => setIsBestseller(e.target.checked)}
+                                                style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#D97706' }}
+                                            />
+                                            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                <Star size={16} fill={isBestseller ? "#F59E0B" : "none"} color={isBestseller ? "#D97706" : "currentColor"} />
+                                                Feature as Bestseller (Display on Homepage "Our Bestsellers")
+                                            </span>
+                                        </label>
+                                    </div>
+
                                     {/* Personalization Options Toggle */}
                                     <div className="admin-form-group" style={{ marginBottom: '20px' }}>
                                         <label className="admin-checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600 }}>

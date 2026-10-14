@@ -15,8 +15,8 @@ try:
 except ImportError:
     cloudinary = None
 
-from .models import Topic, Product
-from .serializers import TopicSerializer, ProductSerializer
+from .models import Topic, Product, SiteSetting
+from .serializers import TopicSerializer, ProductSerializer, SiteSettingSerializer
 
 class PublicReadAdminWrite(BasePermission):
     def has_permission(self, request, view):
@@ -41,6 +41,44 @@ class ProductViewSet(viewsets.ModelViewSet):
         if topic_id is not None:
             queryset = queryset.filter(topic_id=topic_id)
         return queryset
+
+class SiteSettingViewSet(viewsets.ModelViewSet):
+    permission_classes = [PublicReadAdminWrite]
+    queryset = SiteSetting.objects.all()
+    serializer_class = SiteSettingSerializer
+
+    def get_object(self):
+        obj, _ = SiteSetting.objects.get_or_create(id=1)
+        return obj
+
+    def list(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=kwargs.get('partial', False))
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+    def partial_update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return self.update(request, *args, **kwargs)
+
 
 class AdminLoginView(APIView):
     permission_classes = [AllowAny]

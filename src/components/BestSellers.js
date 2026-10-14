@@ -22,12 +22,33 @@ const BestSellers = () => {
     const { addToCart } = useCart();
     const revealRef = useScrollReveal();
 
-    const bestsellers = BESTSELLER_REFS.map(({ topicId, productId }) => {
-        const products = subProductsMap[topicId] || [];
-        const product = products.find(p => p.id === productId);
-        const topic = topicsData.find(t => t.id === topicId);
-        return product && topic ? { ...product, topicId, topic } : null;
-    }).filter(Boolean);
+    const dynamicBestsellers = [];
+    let backendSupportsBestseller = false;
+
+    topicsData.forEach(topic => {
+        const products = subProductsMap[topic.id] || [];
+        products.forEach(product => {
+            if (product.rawHasBestseller) {
+                backendSupportsBestseller = true;
+            }
+            if (product.isBestseller) {
+                dynamicBestsellers.push({ ...product, topicId: topic.id, topic });
+            }
+        });
+    });
+
+    const bestsellers = backendSupportsBestseller
+        ? dynamicBestsellers
+        : BESTSELLER_REFS.map(({ topicId, productId }) => {
+            const products = subProductsMap[topicId] || [];
+            const product = products.find(p => p.id === productId);
+            const topic = topicsData.find(t => t.id === topicId);
+            return product && topic ? { ...product, topicId, topic } : null;
+        }).filter(Boolean);
+
+    if (bestsellers.length === 0) {
+        return null;
+    }
 
     const handleCardClick = (item) => {
         navigate(`/product/${item.topicId}/${item.id}`);

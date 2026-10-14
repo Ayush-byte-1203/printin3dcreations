@@ -1,6 +1,7 @@
 from urllib.parse import urlsplit
 from rest_framework import serializers
-from .models import Topic, Product
+from .models import Topic, Product, SiteSetting
+
 
 def validate_image_url(value):
     if not isinstance(value, str) or len(value) > 1000 or any(ord(c) < 32 for c in value):
@@ -44,3 +45,9 @@ class ProductSerializer(serializers.ModelSerializer):
     def validate_price(self, value):
         if value < 0: raise serializers.ValidationError('Price cannot be negative.')
         return value
+
+class SiteSettingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SiteSetting
+        fields = '__all__'
+

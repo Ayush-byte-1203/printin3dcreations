@@ -27,6 +27,7 @@ const AdminLogin = lazy(() => import('./components/Admin/AdminLogin'));
 const AdminDashboard = lazy(() => import('./components/Admin/AdminDashboard'));
 const AdminTopics = lazy(() => import('./components/Admin/AdminTopics'));
 const AdminProducts = lazy(() => import('./components/Admin/AdminProducts'));
+const AdminHeroSettings = lazy(() => import('./components/Admin/AdminHeroSettings'));
 
 function AdminEntry({ unlock }) {
     const navigate = useNavigate();
@@ -74,6 +75,7 @@ export function AppContent({ isCheckoutOpen, setIsCheckoutOpen }) {
                         <Route index element={<AdminDashboard />} />
                         <Route path="categories" element={<AdminTopics />} />
                         <Route path="products" element={<AdminProducts />} />
+                        <Route path="hero-settings" element={<AdminHeroSettings />} />
                     </Route>
                 </Route>
                 <Route path="*" element={<NotFound />} />
