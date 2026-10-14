@@ -33,8 +33,16 @@ class TopicViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user and user.is_authenticated and user.is_staff:
-            queryset = Topic.objects.all()
+        queryset = Topic.objects.all()
+
+        show_all = (
+            (user and user.is_authenticated and user.is_staff) or
+            self.request.query_params.get('all') in ['true', '1'] or
+            self.request.query_params.get('include_hidden') in ['true', '1'] or
+            self.request.query_params.get('include_inactive') in ['true', '1']
+        )
+
+        if show_all:
             is_active_param = self.request.query_params.get('is_active')
             if is_active_param is not None:
                 if is_active_param.lower() in ['true', '1']:
@@ -42,6 +50,7 @@ class TopicViewSet(viewsets.ModelViewSet):
                 elif is_active_param.lower() in ['false', '0']:
                     queryset = queryset.filter(is_active=False)
             return queryset
+
         return Topic.objects.filter(is_active=True)
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -58,7 +67,14 @@ class ProductViewSet(viewsets.ModelViewSet):
                 raise ValidationError({'topic': 'Use a numeric category ID.'})
             queryset = queryset.filter(topic_id=int(topic_id))
 
-        if user and user.is_authenticated and user.is_staff:
+        show_all = (
+            (user and user.is_authenticated and user.is_staff) or
+            self.request.query_params.get('all') in ['true', '1'] or
+            self.request.query_params.get('include_hidden') in ['true', '1'] or
+            self.request.query_params.get('include_inactive') in ['true', '1']
+        )
+
+        if show_all:
             is_active_param = self.request.query_params.get('is_active')
             if is_active_param is not None:
                 if is_active_param.lower() in ['true', '1']:

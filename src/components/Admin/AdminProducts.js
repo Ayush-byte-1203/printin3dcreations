@@ -505,16 +505,16 @@ const AdminProducts = () => {
                                             type="button"
                                             onClick={() => handleToggleActive(p)}
                                             disabled={togglingActiveId === p.id}
-                                            title={(p.is_active !== false && p.isActive !== false) ? "Click to temporarily hide/block this product" : "Click to unhide/activate this product"}
+                                            title={(p.is_active !== false && p.isActive !== false) ? "Click to temporarily pause/hide this product from store" : "Click to activate and show this product in store"}
                                             style={{
                                                 display: 'inline-flex',
                                                 alignItems: 'center',
                                                 gap: '6px',
-                                                padding: '5px 12px',
+                                                padding: '6px 14px',
                                                 borderRadius: '20px',
-                                                border: (p.is_active !== false && p.isActive !== false) ? '1px solid #10B981' : '1px solid #F43F5E',
-                                                background: (p.is_active !== false && p.isActive !== false) ? '#ECFDF5' : '#FFF1F2',
-                                                color: (p.is_active !== false && p.isActive !== false) ? '#065F46' : '#9F1239',
+                                                border: (p.is_active !== false && p.isActive !== false) ? '1px solid #10B981' : '1px solid #F59E0B',
+                                                background: (p.is_active !== false && p.isActive !== false) ? '#ECFDF5' : '#FEF3C7',
+                                                color: (p.is_active !== false && p.isActive !== false) ? '#065F46' : '#92400E',
                                                 cursor: togglingActiveId === p.id ? 'wait' : 'pointer',
                                                 fontSize: '0.75rem',
                                                 fontWeight: 700,
@@ -523,11 +523,11 @@ const AdminProducts = () => {
                                             }}
                                         >
                                             {(p.is_active !== false && p.isActive !== false) ? <Eye size={14} /> : <EyeOff size={14} />}
-                                            {(p.is_active !== false && p.isActive !== false) ? 'Active' : 'Hidden'}
+                                            {(p.is_active !== false && p.isActive !== false) ? 'Active' : 'Paused (Click to Activate)'}
                                         </button>
                                         {p.categoryActive === false && (
-                                            <div style={{ fontSize: '0.68rem', color: '#E11D48', fontWeight: 600, marginTop: '2px' }}>
-                                                (Category Hidden)
+                                            <div style={{ fontSize: '0.68rem', color: '#B45309', fontWeight: 600, marginTop: '2px' }}>
+                                                (Category Paused)
                                             </div>
                                         )}
                                     </td>

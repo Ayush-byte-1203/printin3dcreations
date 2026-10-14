@@ -81,3 +81,32 @@ class VisibilityAndBlockingTests(APITestCase):
         self.assertEqual(res_patch_prod.status_code, 200)
         self.prod1_active.refresh_from_db()
         self.assertFalse(self.prod1_active.is_active)
+
+    def test_all_flag_returns_paused_items_without_deleting_and_allows_reactivation(self):
+        # ?all=true returns all topics and products so admin studio never loses them
+        res_topics = self.client.get('/api/topics/?all=true')
+        self.assertEqual(res_topics.status_code, 200)
+        topic_ids = [t['id'] for t in res_topics.data]
+        self.assertIn(self.topic1.id, topic_ids)
+        self.assertIn(self.topic2.id, topic_ids) # paused category is preserved!
+
+        res_products = self.client.get('/api/products/?all=true')
+        self.assertEqual(res_products.status_code, 200)
+        prod_ids = [p['product_id'] for p in res_products.data]
+        self.assertIn('1-1', prod_ids)
+        self.assertIn('1-2', prod_ids) # paused product is preserved!
+        self.assertIn('2-1', prod_ids)
+
+        # Staff can activate the paused product back
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        res_reactivate = self.client.patch(f'/api/products/{self.prod1_hidden.id}/', {'is_active': True}, format='json')
+        self.assertEqual(res_reactivate.status_code, 200)
+        self.prod1_hidden.refresh_from_db()
+        self.assertTrue(self.prod1_hidden.is_active)
+
+        # Now public user can see it again without ?all=true!
+        self.client.credentials() # clear auth
+        res_public_after = self.client.get('/api/products/')
+        prod_ids_after = [p['product_id'] for p in res_public_after.data]
+        self.assertIn('1-2', prod_ids_after)
+

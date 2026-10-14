@@ -233,16 +233,16 @@ const AdminTopics = () => {
                                             type="button"
                                             onClick={() => handleToggleActive(topic)}
                                             disabled={togglingTopicId === topic.id}
-                                            title={(topic.is_active !== false && topic.isActive !== false) ? "Click to temporarily hide/block this category" : "Click to unhide/activate this category"}
+                                            title={(topic.is_active !== false && topic.isActive !== false) ? "Click to temporarily pause/hide this category" : "Click to activate and show this category in store"}
                                             style={{
                                                 display: 'inline-flex',
                                                 alignItems: 'center',
                                                 gap: '6px',
-                                                padding: '5px 12px',
+                                                padding: '6px 14px',
                                                 borderRadius: '20px',
-                                                border: (topic.is_active !== false && topic.isActive !== false) ? '1px solid #10B981' : '1px solid #F43F5E',
-                                                background: (topic.is_active !== false && topic.isActive !== false) ? '#ECFDF5' : '#FFF1F2',
-                                                color: (topic.is_active !== false && topic.isActive !== false) ? '#065F46' : '#9F1239',
+                                                border: (topic.is_active !== false && topic.isActive !== false) ? '1px solid #10B981' : '1px solid #F59E0B',
+                                                background: (topic.is_active !== false && topic.isActive !== false) ? '#ECFDF5' : '#FEF3C7',
+                                                color: (topic.is_active !== false && topic.isActive !== false) ? '#065F46' : '#92400E',
                                                 cursor: togglingTopicId === topic.id ? 'wait' : 'pointer',
                                                 fontSize: '0.75rem',
                                                 fontWeight: 700,
@@ -251,7 +251,7 @@ const AdminTopics = () => {
                                             }}
                                         >
                                             {(topic.is_active !== false && topic.isActive !== false) ? <Eye size={14} /> : <EyeOff size={14} />}
-                                            {(topic.is_active !== false && topic.isActive !== false) ? 'Active' : 'Hidden / Blocked'}
+                                            {(topic.is_active !== false && topic.isActive !== false) ? 'Active' : 'Paused (Click to Activate)'}
                                         </button>
                                     </td>
                                     <td>
