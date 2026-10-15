@@ -131,7 +131,7 @@ const SubProductDetails = () => {
                         </div>
 
                         {/* Gallery Thumbnails for active color/product */}
-                        {galleryImages && galleryImages.length > 1 && (
+                        {galleryImages && galleryImages.length > 0 && (
                             <div className="pdp-thumbnails pdp-gallery-thumbnails">
                                 {galleryImages.map((img, idx) => (
                                     <button 
@@ -209,45 +209,6 @@ const SubProductDetails = () => {
                                 <span style={{ fontSize: '0.55em', fontWeight: 'normal', opacity: 0.8, marginLeft: '8px' }}>(Inclusive of all taxes)</span>
                             </div>
                         </div>
-
-                        {product.hasColors && product.colorOptions && product.colorOptions.length > 0 && (
-                            <div className="pdp-color-picker-section" style={{ marginBottom: '24px', padding: '16px', background: '#F8FAFC', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                                    <span className="pdp-small-title" style={{ margin: 0, fontWeight: 700, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em', color: 'var(--color-text-secondary)' }}>Color Options</span>
-                                    {activeColorOpt && (
-                                        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-primary)' }}>
-                                            Selected: {activeColorOpt.color}
-                                        </span>
-                                    )}
-                                </div>
-                                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                                    {product.colorOptions.map((opt, idx) => (
-                                        <button
-                                            key={idx}
-                                            type="button"
-                                            onClick={() => {
-                                                setSelectedColor(idx);
-                                                setActiveImg(0);
-                                            }}
-                                            style={{
-                                                padding: '8px 16px',
-                                                borderRadius: '6px',
-                                                border: selectedColor === idx ? '2px solid var(--color-primary)' : '1px solid var(--color-border)',
-                                                background: selectedColor === idx ? 'var(--color-primary-light)' : '#fff',
-                                                color: selectedColor === idx ? 'var(--color-primary)' : 'var(--color-text-main)',
-                                                fontWeight: 600,
-                                                fontSize: '0.85rem',
-                                                cursor: 'pointer',
-                                                transition: 'all 0.2s ease',
-                                                outline: 'none'
-                                            }}
-                                        >
-                                            {opt.color}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
 
                         <div className="pdp-storytelling">
                             <h3 className="section-title-pdp">The Craftsmanship</h3>
