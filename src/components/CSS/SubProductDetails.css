@@ -68,33 +68,100 @@
 
 .pdp-thumbnails {
     display: flex;
-    gap: 16px;
+    gap: 12px;
     margin-top: 20px;
     flex-wrap: wrap;
+    align-items: center;
 }
 
 .pdp-thumb {
-    width: 80px;
-    height: 80px;
-    border-radius: 16px;
+    position: relative;
+    width: 82px;
+    height: 82px;
+    border-radius: 14px;
     background: var(--color-bg-white);
-    border: 2px solid transparent;
+    border: 2px solid var(--color-border);
     cursor: pointer;
     overflow: hidden;
-    transition: all var(--t-fast) ease;
-    opacity: 0.6;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.9;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 .pdp-thumb img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.pdp-thumb:hover {
+    border-color: var(--color-primary);
+    opacity: 1;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+}
+
+.pdp-thumb:hover img {
+    transform: scale(1.08);
 }
 
 .pdp-thumb.active {
     border-color: var(--color-primary);
     opacity: 1;
-    transform: scale(1.05);
+    box-shadow: 0 0 0 2px var(--color-primary-light), 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: scale(1.04);
+}
+
+.pdp-thumb-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(15, 23, 42, 0.92) 0%, rgba(15, 23, 42, 0.72) 75%, transparent 100%);
+    color: #ffffff;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-align: center;
+    padding: 6px 3px 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: 0.02em;
+    pointer-events: none;
+    line-height: 1.1;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.pdp-other-colors-section {
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px dashed var(--color-border);
+}
+
+.pdp-other-colors-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.pdp-other-colors-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-main);
+}
+
+.pdp-other-colors-count {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    font-weight: 600;
 }
 
 /* ── Info Panel ── */

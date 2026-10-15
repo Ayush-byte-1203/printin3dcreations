@@ -54,13 +54,19 @@ const SubProductDetails = () => {
         return (found && found.isActive !== false && found.is_active !== false) ? found : null;
     }, [products, productId]);
 
-    const galleryImages = useMemo(() => {
+    const activeColorOpt = useMemo(() => {
         if (product && product.hasColors && product.colorOptions && product.colorOptions.length > 0) {
-            const opt = product.colorOptions[selectedColor];
-            return opt && opt.images && opt.images.length > 0 ? opt.images : (product.images || []);
+            return product.colorOptions[selectedColor] || product.colorOptions[0];
+        }
+        return null;
+    }, [product, selectedColor]);
+
+    const galleryImages = useMemo(() => {
+        if (activeColorOpt && activeColorOpt.images && activeColorOpt.images.length > 0) {
+            return activeColorOpt.images;
         }
         return product ? (product.images || []) : [];
-    }, [product, selectedColor]);
+    }, [product, activeColorOpt]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -79,7 +85,6 @@ const SubProductDetails = () => {
             return;
         }
         
-        const activeColorOpt = product.hasColors && product.colorOptions && product.colorOptions[selectedColor];
         const selectedColorName = activeColorOpt ? activeColorOpt.color : null;
 
         // Ensure we pass the customization text under the key expected by CartContext
@@ -112,7 +117,7 @@ const SubProductDetails = () => {
                             {galleryImages && galleryImages[activeImg] ? (
                                 <img 
                                     src={galleryImages[activeImg]} 
-                                    alt={product.name} 
+                                    alt={`${product.name}${activeColorOpt ? ` - ${activeColorOpt.color}` : ''}`} 
                                     className="pdp-main-image"
                                     fetchPriority="high" decoding="async"
                                     onError={(e) => {
@@ -124,24 +129,73 @@ const SubProductDetails = () => {
                                 <div className="pdp-image-placeholder">🎁</div>
                             )}
                         </div>
-                        <div className="pdp-thumbnails">
-                            {galleryImages && galleryImages.map((img, idx) => (
-                                <div 
-                                    key={idx} 
-                                    className={`pdp-thumb ${activeImg === idx ? 'active' : ''}`}
-                                    onClick={() => setActiveImg(idx)}
-                                >
-                                    <img 
-                                        src={img} 
-                                        alt={`View ${idx + 1}`}
-                                        onError={(e) => {
-                                            e.target.onerror = null;
-                                            e.target.src = '/images/product-unavailable.svg';
-                                        }}
-                                    />
+
+                        {/* Gallery Thumbnails for active color/product */}
+                        {galleryImages && galleryImages.length > 1 && (
+                            <div className="pdp-thumbnails pdp-gallery-thumbnails">
+                                {galleryImages.map((img, idx) => (
+                                    <button 
+                                        key={`view-${idx}`} 
+                                        type="button"
+                                        className={`pdp-thumb ${activeImg === idx ? 'active' : ''}`}
+                                        onClick={() => setActiveImg(idx)}
+                                        title={`View image ${idx + 1}`}
+                                        aria-label={`View image ${idx + 1}`}
+                                    >
+                                        <img 
+                                            src={img} 
+                                            alt={`View ${idx + 1}`}
+                                            onError={(e) => {
+                                                e.target.onerror = null;
+                                                e.target.src = '/images/product-unavailable.svg';
+                                            }}
+                                        />
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* More Color Options Section */}
+                        {product.hasColors && product.colorOptions && product.colorOptions.length > 1 && (
+                            <div className="pdp-other-colors-section">
+                                <div className="pdp-other-colors-header">
+                                    <span className="pdp-other-colors-title">More Color Options</span>
+                                    <span className="pdp-other-colors-count">
+                                        {product.colorOptions.length - 1} other shades available
+                                    </span>
                                 </div>
-                            ))}
-                        </div>
+                                <div className="pdp-thumbnails pdp-color-thumbnails">
+                                    {product.colorOptions.map((opt, idx) => {
+                                        if (idx === selectedColor) return null; // Hide the currently selected color
+                                        const colorImg = (opt.images && opt.images.length > 0) ? opt.images[0] : (product.images && product.images[0]);
+                                        if (!colorImg) return null;
+                                        return (
+                                            <button 
+                                                key={`color-${idx}`} 
+                                                type="button"
+                                                className="pdp-thumb pdp-color-thumb"
+                                                onClick={() => {
+                                                    setSelectedColor(idx);
+                                                    setActiveImg(0);
+                                                }}
+                                                title={`Switch to ${opt.color}`}
+                                                aria-label={`Select ${opt.color}`}
+                                            >
+                                                <img 
+                                                    src={colorImg} 
+                                                    alt={opt.color}
+                                                    onError={(e) => {
+                                                        e.target.onerror = null;
+                                                        e.target.src = '/images/product-unavailable.svg';
+                                                    }}
+                                                />
+                                                <span className="pdp-thumb-label">{opt.color}</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Information Section */}
@@ -158,7 +212,14 @@ const SubProductDetails = () => {
 
                         {product.hasColors && product.colorOptions && product.colorOptions.length > 0 && (
                             <div className="pdp-color-picker-section" style={{ marginBottom: '24px', padding: '16px', background: '#F8FAFC', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
-                                <span className="pdp-small-title" style={{ display: 'block', marginBottom: '12px', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em', color: 'var(--color-text-secondary)' }}>Color Options</span>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                                    <span className="pdp-small-title" style={{ margin: 0, fontWeight: 700, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em', color: 'var(--color-text-secondary)' }}>Color Options</span>
+                                    {activeColorOpt && (
+                                        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-primary)' }}>
+                                            Selected: {activeColorOpt.color}
+                                        </span>
+                                    )}
+                                </div>
                                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                     {product.colorOptions.map((opt, idx) => (
                                         <button
